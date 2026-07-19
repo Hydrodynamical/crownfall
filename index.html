@@ -82,6 +82,14 @@
     padding:16px;max-width:480px;max-height:85vh;overflow-y:auto;text-align:center}
   input[type=text]{font-family:inherit;font-size:16px;padding:8px;border-radius:8px;
     border:1px solid #38664c;background:#0a1f13;color:var(--ink);width:200px;text-align:center}
+  #courtsBtn{position:fixed;right:10px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:40;
+    width:42px;height:42px;border-radius:50%;border:1px solid var(--gold);
+    background:rgba(27,58,41,.92);color:var(--gold);font-size:20px;cursor:pointer;padding:0}
+  .card .s.emb{bottom:3px;right:3px}
+  .courtrow{display:flex;gap:12px;align-items:flex-start;text-align:left;margin:10px 0}
+  .courtrow svg{flex:none}
+  .courtrow h4{margin:0 0 2px;color:var(--gold);letter-spacing:1px;font-size:15px}
+  .courtrow p{margin:0;font-size:13.5px;line-height:1.45}
   .namechip{color:var(--gold);font-weight:bold}
   .center{text-align:center}
   .small{font-size:12px;color:var(--dim)}
@@ -89,12 +97,35 @@
 </head>
 <body>
 <div id="app"></div>
+<button id="courtsBtn" title="The four courts &amp; their powers">⚜</button>
+<div id="courtsModal"></div>
 <script>
 "use strict";
 /* ============================ RULES ENGINE ============================ */
 const SUITS=["♠","♥","♦","♣"];
 const AV={A:14,K:13,Q:12,J:11}, SL={A:0,K:1,Q:2,J:3};
 const SUITNAME={"♠":"Legion","♥":"Cloister","♦":"Exchange","♣":"Veil"};
+const POWERS={
+  "♠":{court:"The Legion",short:"wins deal +1 wound",
+       power:"When your ♠ agent wins a battle, the loser takes 1 extra wound. The sword through the spade: every victory cuts twice."},
+  "♥":{court:"The Cloister",short:"wins heal a wounded card",
+       power:"When your ♥ agent wins a battle in which it spent an augment, you may recover one other number card from your wounds to hand. The cross on the heart: the only court that heals."},
+  "♦":{court:"The Exchange",short:"wins spend nothing",
+       power:"When your ♦ agent wins a battle, it spends nothing — all its augments return to your hand (but the enemy has seen them). The gem in the coin: victory is free."},
+  "♣":{court:"The Veil",short:"first muster: peek a card",
+       power:"The first time each ♣ agent is mustered, you may peek at one face-down card in one enemy stack, named by position. Declining forfeits it. The eye in the club: play with the lights on."},
+};
+function emblem(suit,size,onDark){
+  const ink=onDark?"#e8e2d4":"#1b1b1f", gold=onDark?"#d4af37":"#a67c00",
+        face=onDark?"#123522":"#f6f2e7", rd="#c0392b";
+  const art={
+    "♠":`<line x1="28" y1="6" x2="28" y2="50" stroke="${gold}" stroke-width="3"/><line x1="20" y1="43" x2="36" y2="43" stroke="${gold}" stroke-width="3"/><path d="M28 10 C22 20 14 24 14 31 c0 5 4 8 8 8 2 0 4-1 6-3 2 2 4 3 6 3 4 0 8-3 8-8 0-7-8-11-14-21z" fill="${ink}"/><line x1="28" y1="14" x2="28" y2="36" stroke="${face}" stroke-width="2"/>`,
+    "♥":`<path d="M28 46 C14 36 8 28 8 20 8 13 13 9 19 9 c4 0 7 2 9 5 2-3 5-5 9-5 6 0 11 4 11 11 0 8-6 16-20 26z" fill="${rd}"/><rect x="25.5" y="17" width="5" height="16" rx="1.5" fill="${face}"/><rect x="20" y="22.5" width="16" height="5" rx="1.5" fill="${face}"/>`,
+    "♦":`<circle cx="28" cy="28" r="21" fill="none" stroke="${gold}" stroke-width="3"/><path d="M28 12 L41 28 L28 44 L15 28 z" fill="${rd}"/><line x1="21" y1="21" x2="24" y2="18" stroke="${face}" stroke-width="2" stroke-linecap="round"/>`,
+    "♣":`<circle cx="28" cy="17" r="9" fill="${ink}"/><circle cx="18" cy="30" r="9" fill="${ink}"/><circle cx="38" cy="30" r="9" fill="${ink}"/><rect x="25.5" y="32" width="5" height="14" fill="${ink}"/><ellipse cx="28" cy="26" rx="8" ry="5" fill="${face}"/><circle cx="28" cy="26" r="2.6" fill="${gold}"/>`,
+  };
+  return `<svg width="${size}" height="${size}" viewBox="0 0 56 56" style="display:block">${art[suit]}</svg>`;
+}
 let G=null;               // game state (serializable)
 const UI={sel:null,armSel:null,mode:null,target:null,peekCard:null,decree:false};
 
@@ -528,8 +559,11 @@ function load(){
 const app=document.getElementById("app");
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
 function cardHTML(c,cls="",sel=false){
+  const glyph=isAgent(c)
+    ?`<div class="s emb">${emblem(c.suit,cls.includes("mini")?15:26,false)}</div>`
+    :`<div class="s">${c.suit}</div>`;
   return `<div class="card ${red(c)?"red":""} ${cls} ${sel?"sel":""}">
-    <div class="c">${c.rank}<br>${c.suit}</div><div class="s">${c.suit}</div></div>`;
+    <div class="c">${c.rank}<br>${c.suit}</div>${glyph}</div>`;
 }
 const backHTML=(cls="")=>`<div class="card back ${cls}"></div>`;
 function stackHTML(st,opts){ // opts: {faceup, sel, target, showTotal, badge}
@@ -786,7 +820,7 @@ function render(){
   } else if(sel&&sel.kind==="hand"){
     const c=me.hand[sel.i];
     if(isAgent(c)){
-      hint=`${cname(c)} — a ${SUITNAME[c.suit]} agent (${AV[c.rank]}, ${SL[c.rank]} slots).`;
+      hint=`${cname(c)} — ${POWERS[c.suit].court} (${AV[c.rank]}, ${SL[c.rank]} slots) · ${POWERS[c.suit].short}.`;
       buttons=btn("Muster",{t:"muster",hi:sel.i},"primary",acts<1||me.front.length>=3);
     } else {
       hint=`${cname(c)} — now tap one of your stacks to arm it.`;
@@ -794,7 +828,7 @@ function render(){
     }
   } else if(sel&&sel.kind==="stack"){
     const s=me.front[sel.i];
-    hint=`Stack: ${stCards(s).map(cname).join("+")} = ${stTotal(s)}${s.attacked?" (already attacked)":""}.`;
+    hint=`Stack: ${stCards(s).map(cname).join("+")} = ${stTotal(s)}${s.attacked?" (already attacked)":""} · ${POWERS[s.agent.suit].court}: ${POWERS[s.agent.suit].short}.`;
     const noAtk=acts<1||s.attacked||G.handicap;
     buttons=btn("Strike",{t:"strike",si:sel.i},"",noAtk)
       +btn("Challenge",{t:"ui:beginChallenge"},"",noAtk||!foe.front.length)
@@ -954,6 +988,25 @@ window.autoTest=function(games=20){
   const conds={};results.forEach(r=>conds[r.cond]=(conds[r.cond]||0)+1);
   return {games,conds,avgTurns:results.reduce((s,r)=>s+r.turns,0)/games};
 };
+
+/* courts reference modal */
+function openCourts(){
+  const m=document.getElementById("courtsModal");
+  const rows=SUITS.map(s=>`<div class="courtrow">${emblem(s,44,true)}<div>
+    <h4>${s} ${POWERS[s].court.toUpperCase()}</h4><p>${POWERS[s].power}</p></div></div>`).join("");
+  m.innerHTML=`<div class="modal"><div>
+    <h2 style="color:var(--gold);letter-spacing:2px;margin:0 0 2px;font-size:20px">THE FOUR COURTS</h2>
+    <p class="small" style="margin:0 0 10px">Powers live on the agent leading the stack.</p>
+    ${rows}
+    <p class="small" style="margin:10px 0"><b style="color:var(--gold)">Loyalty:</b> every augment matching its agent's suit counts +2 in battle.<br>
+    <b style="color:var(--gold)">Ranks:</b> A=14 (0 slots) · K=13 (1) · Q=12 (2) · J=11 (3).</p>
+    <button class="primary" id="courtsClose">Back to the table</button>
+    <div class="small" style="margin-top:8px"><a href="rules.html" target="_blank" rel="noopener" style="color:var(--gold)">Full rulebook ↗</a></div>
+  </div></div>`;
+  document.getElementById("courtsClose").onclick=()=>{m.innerHTML="";};
+  m.firstElementChild.addEventListener("click",e=>{if(e.target===m.firstElementChild)m.innerHTML="";});
+}
+document.getElementById("courtsBtn").onclick=openCourts;
 
 /* boot */
 render();
