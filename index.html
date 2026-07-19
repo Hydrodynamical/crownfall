@@ -45,6 +45,7 @@
   .card.back::after{content:"❦";position:absolute;inset:0;display:flex;align-items:center;
     justify-content:center;color:#c98b9b;font-size:20px}
   .card.sel{outline:3px solid var(--gold);outline-offset:1px}
+  .card.peeked{outline:2px dashed var(--accent);outline-offset:1px}
   .card.mini{width:34px;height:48px}
   .card.mini .c{font-size:10px;left:3px;top:2px}
   .card.mini .s{font-size:15px;bottom:1px;right:3px}
@@ -145,7 +146,7 @@ const logmsg=m=>{G.log.push("T"+G.turnNo+" · "+m); if(G.log.length>400)G.log.sh
 function freshGame(n1,n2){
   let id=0;
   const players=[{name:n1},{name:n2}].map(o=>({name:o.name,deck:[],hand:[],front:[],
-    wounds:[],bleeds:0,clubUsed:[]}));
+    wounds:[],bleeds:0,clubUsed:[],intel:[]}));
   for(const rank of ["A","K","Q","J"]){
     const g=shuffle(SUITS.map(s=>({rank,suit:s,id:id++})));
     players[0].hand.push(g[0],g[1]); players[1].hand.push(g[2],g[3]);
@@ -194,6 +195,24 @@ function woundOne(pi,reason){
 function woundCard(pi,card,reason){
   P(pi).wounds.push(card);
   logmsg(`${P(pi).name} wounds: ${cname(card)} (${reason}) — ${P(pi).wounds.length}/13.`);
+}
+/* intel: cards a player has LEGALLY seen that are currently hidden from them */
+function addIntel(knower,card,src){
+  knower.intel=knower.intel||[];
+  if(!knower.intel.some(e=>e.id===card.id))
+    knower.intel.push({id:card.id,rank:card.rank,suit:card.suit,src});
+}
+function transferSeen(st,ownerIdx){ // a stack returns to its owner's hand
+  const knower=P(1-ownerIdx);
+  for(const c of stCards(st)){
+    if((st.seen||[]).includes(c.id)||(st.decreed&&c===st.agent))
+      addIntel(knower,c,"seen fleeing");
+  }
+}
+function pruneIntel(){ // drop intel once the card is public (in a wounds pile)
+  if(!G||!G.players)return;
+  const pub=new Set([...P(0).wounds,...P(1).wounds].map(c=>c.id));
+  for(const p of G.players)p.intel=(p.intel||[]).filter(e=>!pub.has(e.id));
 }
 const isDefeated=p=>p.wounds.length>=13||!hasAgents(p);
 function checkNow(){ // outside battle: immediate
@@ -280,6 +299,7 @@ function resolveReveal(){
     b.tie=true;
     for(const [pi,st] of [[b.att,b.attStack],[b.def,b.defStack]]){
       if(st.agent.rank==="A"&&!st.augments.length){
+        addIntel(P(1-pi),st.agent,"walked from a tie");
         P(pi).hand.push(st.agent);
         logmsg(`Tie — ${P(pi).name}'s ${cname(st.agent)} walks away (Ace).`);
       } else for(const c of stCards(st)) woundCard(pi,c,"tie: stack destroyed");
@@ -314,7 +334,8 @@ function maybeHeal(spent){
 }
 function finishBattle(spent){
   const b=G.pend.battle;
-  // winner's remaining cards home
+  // winner's remaining cards home — the loser saw them revealed and returning
+  for(const c of [b.wStack.agent,...b.wStack.augments])addIntel(P(b.loser),c,"returned from battle");
   P(b.winner).hand.push(b.wStack.agent,...b.wStack.augments);
   if(b.wStack.agent.suit==="♠"){
     logmsg(`♠ The Legion: extra wound to ${P(b.loser).name}.`);
@@ -353,7 +374,7 @@ function act(a){
       const p=P(G.active), card=p.hand[a.hi];
       if(!card||!isAgent(card)||p.front.length>=3)return;
       p.hand.splice(a.hi,1);
-      const st={agent:card,augments:[],attacked:false,decreed:false};
+      const st={agent:card,augments:[],attacked:false,decreed:false,seen:[]};
       p.front.push(st); G.actions--;
       logmsg(`${p.name} musters a new stack (${p.front.length} on front).`);
       afterAction();
@@ -368,6 +389,7 @@ function act(a){
       const es=P(1-G.active).front[a.si]; if(!es)return;
       const cards=stCards(es), card=cards[a.pos]; if(!card)return;
       UI.peekCard=card;
+      (es.seen=es.seen||[]).push(card.id); // the Veil remembers: stays visible to the peeker
       const posName=a.pos===0?"top":(a.pos===cards.length-1?"bottom":`#${a.pos+1}`);
       logmsg(`♣ The Veil: ${P(G.active).name} peeks the ${posName} card of ${P(1-G.active).name}'s ${cards.length}-stack.`);
       G.pend.peek.done=true;
@@ -391,6 +413,7 @@ function act(a){
     case "recall":{
       if(G.phase!=="turn"||G.actions<1)return;
       const p=P(G.active), st=p.front[a.si]; if(!st)return;
+      transferSeen(st,G.active);
       p.front.splice(a.si,1); p.hand.push(...stCards(st)); G.actions--;
       logmsg(`${p.name} recalls a ${st.augments.length+1}-card stack to hand.`);
       afterAction(); break;}
@@ -459,6 +482,7 @@ function act(a){
       if(b.defStack.augments.length) G.phase="toll";
       else {
         const dp=P(b.def), ix=dp.front.indexOf(b.defStack);
+        transferSeen(b.defStack,b.def);
         dp.front.splice(ix,1); dp.hand.push(...stCards(b.defStack));
         logmsg(`${dp.name} retreats the lone agent (free).`);
         G.pend.battle=null;
@@ -472,6 +496,7 @@ function act(a){
       const aug=st.augments[a.ai]; if(!aug)return;
       st.augments.splice(a.ai,1);
       woundCard(b.def,aug,"retreat toll");
+      transferSeen(st,b.def);
       const ix=dp.front.indexOf(st);
       dp.front.splice(ix,1); dp.hand.push(...stCards(st));
       logmsg(`${dp.name} retreats the stack, paying ${cname(aug)}.`);
@@ -551,6 +576,10 @@ function load(){
       if(b.wStack)b.wStack=relink(b.wStack,b.winner);
       if(b.lStack)b.lStack=relink(b.lStack,b.loser);
     }
+    for(const p of g.players){ // saves from before the intel feature
+      p.intel=p.intel||[];
+      for(const s of p.front)s.seen=s.seen||[];
+    }
     return g;
   }catch(e){return null;}
 }
@@ -566,15 +595,17 @@ function cardHTML(c,cls="",sel=false){
     <div class="c">${c.rank}<br>${c.suit}</div>${glyph}</div>`;
 }
 const backHTML=(cls="")=>`<div class="card back ${cls}"></div>`;
-function stackHTML(st,opts){ // opts: {faceup, sel, target, showTotal, badge}
+function stackHTML(st,opts){ // opts: {faceup, sel, target, showTotal, badge, ghosts}
   const cards=stCards(st);
   let inner="";
   cards.forEach((c,i)=>{
     const up=opts.faceup||(i===0&&st.decreed);
-    inner+=up?cardHTML(c):backHTML();
+    const ghost=!up&&opts.ghosts&&(st.seen||[]).includes(c.id);
+    inner+=up?cardHTML(c):(ghost?cardHTML(c,"peeked"):backHTML());
   });
-  const tag=opts.showTotal?`<div class="tag">${cards.length} card${cards.length>1?"s":""} · <span class="tot">${stTotal(st)}</span></div>`
-        :`<div class="tag">${cards.length} card${cards.length>1?"s":""}${st.decreed?" · Decree":""}</div>`;
+  const spied=(st.seen||[]).length;
+  const tag=opts.showTotal?`<div class="tag">${cards.length} card${cards.length>1?"s":""} · <span class="tot">${stTotal(st)}</span>${spied?" · 👁 spied":""}</div>`
+        :`<div class="tag">${cards.length} card${cards.length>1?"s":""}${st.decreed?" · Decree":""}${opts.ghosts&&spied?" · 👁":""}</div>`;
   return `<div class="stack ${opts.sel?"sel":""} ${opts.target?"target":""}" ${opts.data||""}>
     <div class="stackcards">${opts.badge?`<div class="badge">${opts.badge}</div>`:""}${inner}</div>${tag}</div>`;
 }
@@ -586,6 +617,12 @@ function statusHTML(p,mine){
   return `<span class="counts">deck ${p.deck.length} · hand ${p.hand.length} ·
     <span class="wbig">${p.wounds.length}/13 wounds</span></span>`;
 }
+function intelHTML(viewer,foe){
+  const intel=(viewer.intel||[]);
+  if(!intel.length)return "";
+  return `<div class="small" style="margin-top:6px">👁 Seen in ${esc(foe.name)}'s hand (may have moved): `+
+    intel.map(e=>`<b style="color:${(e.suit==="♥"||e.suit==="♦")?"var(--danger)":"var(--ink)"}">${e.rank}${e.suit}</b>`).join(" · ")+`</div>`;
+}
 function logHTML(){
   return `<details><summary>Battle log (public record)</summary>
     <div class="logbox">${G.log.slice().reverse().map(l=>`<div>${esc(l)}</div>`).join("")}</div></details>`;
@@ -595,6 +632,7 @@ function btn(label,a,cls="",dis=false){
 }
 
 function render(){
+  pruneIntel();
   if(!G){ // title
     const saved=load();
     app.innerHTML=`<h1>CROWNFALL</h1><div class="sub">Bluff with your blood · pass &amp; play</div>
@@ -674,16 +712,22 @@ function render(){
     const n=b.attStack.augments.length+1;
     let body="";
     if(ph==="defStrike"){
-      body=`<p><b>${esc(foe.name)}</b> strikes you with a <b>${n}-card stack</b>${b.attStack.decreed?" (its King is face up)":""}.
+      body=`<p><b>${esc(foe.name)}</b> strikes you with the stack below${b.attStack.decreed?" (its King is face up)":""}.
         Take <b>${n} wound${n>1?"s":""}</b>, or block with one of your stacks?</p>
+        <div class="row" style="justify-content:center">${stackHTML(b.attStack,{ghosts:true})}</div>
+        ${intelHTML(me,foe)}
         <div class="row">`+
         me.front.map((s,i)=>`<div>${stackHTML(s,{faceup:true,showTotal:true})}${btn("Block with this",{t:"blockWith",bi:i})}</div>`).join("")+
         `</div><p>${btn(`Take the hit (${n} wound${n>1?"s":""})`,{t:"takeHit"},"warn")}</p>`;
     } else {
       const decreeNote=b.decree?`<p style="color:var(--danger)"><b>KING'S DECREE${b.attStack?" — "+cname(b.attStack.agent):""}</b> is face up: you cannot retreat.</p>`:"";
-      body=`<p><b>${esc(foe.name)}</b> challenges your stack below with a <b>${n}-card stack</b>.</p>
+      body=`<p><b>${esc(foe.name)}</b> challenges your stack with the <b>${n}-card stack</b> below.</p>
         ${decreeNote}
-        <div class="row">${stackHTML(b.defStack,{faceup:true,showTotal:true,badge:"targeted"})}</div>
+        <div class="row" style="justify-content:center;align-items:center">
+          ${stackHTML(b.attStack,{ghosts:true})}
+          <span style="color:var(--dim);padding:0 6px">→</span>
+          ${stackHTML(b.defStack,{faceup:true,showTotal:true,badge:"targeted"})}</div>
+        ${intelHTML(me,foe)}
         <p>${btn("Fight",{t:"fight"},"primary")}
         ${b.decree?"":btn(b.defStack.augments.length?"Retreat (pay one augment)":"Retreat (free — lone agent)",{t:"retreat"})}</p>`;
     }
@@ -710,10 +754,14 @@ function render(){
     const st=ph==="raiseDef"?b.defStack:b.attStack;
     const me=P(who);
     const augs=me.hand.map((c,i)=>({c,i})).filter(x=>!isAgent(x.c));
+    const foeSt=ph==="raiseDef"?b.attStack:b.defStack;
     app.innerHTML=`<h1 style="font-size:18px">THE RAISE — ${esc(me.name).toUpperCase()}</h1>
       <div class="zone center"><p>The battle is locked. You may slide <b>one</b> hidden augment
         under your fighter (${slotsFree(st)} slot${slotsFree(st)>1?"s":""} free)${ph==="raiseDef"?" — defender raises first":""}.</p>
-      <div class="row" style="justify-content:center">${stackHTML(st,{faceup:true,showTotal:true})}</div>
+      <div class="row" style="justify-content:center;align-items:center">
+        ${stackHTML(st,{faceup:true,showTotal:true})}
+        <span style="color:var(--dim);padding:0 8px">vs</span>
+        ${stackHTML(foeSt,{ghosts:true})}</div>
       <div class="handrow" style="justify-content:center">${
         augs.map(x=>`<div data-a='${JSON.stringify({t:"raise",hi:x.i})}'>${cardHTML(x.c)}</div>`).join("")
       }</div>
@@ -771,8 +819,10 @@ function render(){
     let body;
     if(UI.peekCard){
       body=`<p>Behind the veil you glimpse:</p>
-        <div class="row" style="justify-content:center">${cardHTML(UI.peekCard)}</div>
-        <p>${btn("Commit it to memory",{t:"peekDone"},"primary")}</p>`;
+        <div class="row" style="justify-content:center">${cardHTML(UI.peekCard,"peeked")}</div>
+        <p class="small">The Veil remembers: this card stays visible to you on their stack —
+        and if it flees to their hand, it joins your 👁 intel.</p>
+        <p>${btn("Noted",{t:"peekDone"},"primary")}</p>`;
     } else {
       body=`<p>♣ <b>The Veil</b> stirs: peek at <b>one</b> face-down card in one enemy stack
         (the position you name is public). Or decline — forfeiting this agent's peek forever.</p>`+
@@ -799,7 +849,7 @@ function render(){
   let enemyFront=foe.front.length?foe.front.map((s,i)=>{
     const targetable=mode==="pickTarget";
     return `<div ${targetable?`data-a='${JSON.stringify({t:"ui:target",ei:i})}'`:""}>
-      ${stackHTML(s,{faceup:false,target:targetable})}</div>`;
+      ${stackHTML(s,{faceup:false,target:targetable,ghosts:true})}</div>`;
   }).join(""):`<div class="empty">no<br>stacks</div>`;
   // my front
   let myFront=me.front.length?me.front.map((s,i)=>{
@@ -841,6 +891,7 @@ function render(){
     ${G.banner?`<div class="banner">${esc(G.banner)}</div>`:""}
     <div class="zone"><h3>${esc(foe.name)} ${statusHTML(foe)}</h3>
       <div class="row">${enemyFront}</div>
+      ${intelHTML(me,foe)}
       <details><summary>${esc(foe.name)}'s wounds (public)</summary>${woundsHTML(foe)}</details></div>
     <div class="zone"><h3>Your front (max 3)</h3><div class="row">${myFront}</div></div>
     <div class="zone"><h3>Your hand ${statusHTML(me)}</h3>
