@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rulebook — CROWNFALL</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%91%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --felt:#0d2818; --felt2:#123522; --ink:#e8e2d4; --dim:#9aa78f;
+    --gold:#d4af37; --red:#c0392b; --danger:#e05545;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--felt);color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif;line-height:1.6}
+  a{color:var(--gold)}
+  header{text-align:center;padding:40px 18px 10px}
+  h1.title{font-size:38px;letter-spacing:7px;color:var(--gold);margin:0}
+  .tagline{color:var(--dim);font-style:italic;margin:6px 0 14px}
+  .navbtns a{display:inline-block;border:1px solid var(--gold);border-radius:10px;
+    background:#1b3a29;color:var(--ink);padding:9px 16px;text-decoration:none;
+    font-size:14.5px;margin:3px}
+  .navbtns a.primary{background:var(--gold);color:#22200f;font-weight:bold}
+  .layout{max-width:980px;margin:0 auto;padding:10px 18px 90px;display:flex;gap:26px;
+    align-items:flex-start}
+  nav.toc{position:sticky;top:14px;flex:0 0 220px;background:var(--felt2);
+    border:1px solid #234a35;border-radius:14px;padding:14px;font-size:13.5px}
+  nav.toc b{color:var(--gold);letter-spacing:2px;font-size:12px;text-transform:uppercase}
+  nav.toc a{display:block;color:var(--ink);text-decoration:none;padding:4px 2px;
+    border-bottom:1px dotted #1f4531}
+  nav.toc a:hover{color:var(--gold)}
+  nav.toc .n{color:var(--dim);margin-right:6px}
+  main{flex:1;min-width:0}
+  h2{color:var(--gold);letter-spacing:2px;font-size:21px;margin:40px 0 8px;
+    border-bottom:1px solid #2c5540;padding-bottom:8px;scroll-margin-top:12px}
+  h2 .n{color:var(--dim);font-size:14px;letter-spacing:0;margin-right:8px}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:12px 0}
+  th,td{border:1px solid #2c5540;padding:8px 10px;text-align:left;vertical-align:top}
+  th{color:var(--gold);letter-spacing:1px;font-size:12.5px;text-transform:uppercase;
+    background:#0a1f13}
+  td b,li b,p b{color:var(--gold)}
+  .callout{background:var(--felt2);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;
+    padding:12px 14px;margin:12px 0}
+  .danger{border-left-color:var(--danger)}
+  .danger b:first-child{color:var(--danger)}
+  ol,ul{padding-left:22px}
+  li{margin:5px 0}
+  .suit-r{color:var(--danger)}
+  footer{margin-top:56px;text-align:center;color:var(--dim);font-size:13.5px;
+    border-top:1px solid #2c5540;padding-top:18px}
+  @media(max-width:760px){.layout{flex-direction:column}
+    nav.toc{position:static;flex:none;width:100%}}
+</style>
+</head>
+<body>
+<header>
+  <h1 class="title">CROWNFALL</h1>
+  <div class="tagline">The Rulebook — 2 players · one standard 52-card deck · 15–30 minutes</div>
+  <div class="navbtns">
+    <a class="primary" href="index.html">▶ Play</a>
+    <a href="tutorial.html">🎓 Tutorial</a>
+  </div>
+</header>
+<div class="layout">
+<nav class="toc">
+  <b>Contents</b>
+  <a href="#idea"><span class="n">1</span>The Idea</a>
+  <a href="#setup"><span class="n">2</span>Setup</a>
+  <a href="#wounds"><span class="n">3</span>Wounds</a>
+  <a href="#turn"><span class="n">4</span>Turn Order</a>
+  <a href="#ranks"><span class="n">5</span>The Rank Table</a>
+  <a href="#attacks"><span class="n">6</span>Strike &amp; Challenge</a>
+  <a href="#raise"><span class="n">7</span>The Raise</a>
+  <a href="#battle"><span class="n">8</span>Battle</a>
+  <a href="#courts"><span class="n">9</span>The Four Courts</a>
+  <a href="#winning"><span class="n">10</span>Winning &amp; Losing</a>
+  <a href="#law"><span class="n">11</span>Table Law</a>
+  <a href="#edge"><span class="n">12</span>Edge States</a>
+  <a href="#economy"><span class="n">13</span>The Economy</a>
+  <a href="#reading"><span class="n">14</span>Reading the Table</a>
+  <a href="#draft"><span class="n">15</span>Court Draft (Variant)</a>
+</nav>
+<main>
+
+<h2 id="idea"><span class="n">§1</span>The Idea</h2>
+<p>You command a court of 8 <b>agents</b> (A, K, Q, J) armed with hidden <b>augments</b> (2–10).
+Your cards are your life: you begin with 26, and every card you lose — in battle, to attrition,
+to your own spending — goes face up onto your <b>Wounds pile</b>. <b>Your 13th wound is fatal.</b></p>
+<p>Deploy face down, bluff with stack size, raise at the last second, and win reveals by the
+smallest margin you dare — because in Crownfall even victory costs blood.</p>
+
+<h2 id="setup"><span class="n">§2</span>Setup (2 minutes)</h2>
+<ol>
+  <li><b>Split the deck.</b> The 16 face-value cards (A, K, Q, J) are <b>agents</b>; the 36 number
+    cards (2–10) are <b>augments</b>. Aces are agents worth 14.</li>
+  <li><b>Deal agents rank by rank.</b> Shuffle the four Aces, deal 2 to each player face down.
+    Repeat for Kings, Queens, and Jacks. Each player now holds 8 agents — exactly two of each rank,
+    random suits. They start in your hand, hidden.</li>
+  <li><b>Deal augments.</b> Shuffle all 36 number cards and deal 18 face down to each player.
+    This is your <b>deck</b>. Draw 4 into your hand.</li>
+  <li><b>Decide first player.</b> Each player reveals the top card of their deck; whoever shows the
+    <b>higher number chooses who goes first</b>. On a tie, shuffle the revealed cards back and reveal
+    again until they differ. Both players then shuffle their revealed card back into their deck.</li>
+  <li><b>Lay out your side.</b> Leave space for your <b>Front</b> (up to 3 deployed stacks) and your
+    <b>Wounds pile</b> (always face up, always public).</li>
+</ol>
+<div class="callout">You now possess 26 cards (8 agents + 4 hand + 14 deck). <b>Your cards never
+change hands: you always own exactly 26, and your health is 26 minus your wounds.</b> Your hand is
+private and has no size limit.</div>
+
+<h2 id="wounds"><span class="n">§3</span>Wounds (Your Health)</h2>
+<p>Whenever you take a wound, move <b>one of your cards, face up, onto your Wounds pile</b>, from
+the first available source:</p>
+<ol>
+  <li>the <b>top of your deck</b>; if your deck is empty,</li>
+  <li>your <b>hand</b> — fan it face down and your <b>opponent pulls one card blind</b>; if your
+    hand is empty,</li>
+  <li>your <b>Front</b> — you choose the card, but you <b>must take an augment (from any of your
+    stacks) while any augment remains anywhere on your Front</b>; only when your Front holds no
+    augments may an agent be taken.</li>
+</ol>
+<p>Take multiple wounds <b>one at a time, re-checking the source order before each card</b>. Wounds
+are public.</p>
+<div class="callout danger"><b>The moment you have 13 wounds, you lose</b> — with one exception:
+wounds dealt by a battle are checked only after the battle fully resolves (§8). Dead cards never
+return — except number cards healed by Hearts. <b>Agents never leave the Wounds pile.</b></div>
+
+<h2 id="turn"><span class="n">§4</span>Turn Order</h2>
+<p>On your turn:</p>
+<ol>
+  <li><b>Draw 1</b> from your deck. This is mandatory. If your deck is empty, <b>Bleed</b> instead:
+    take <b>1 wound the first time you Bleed this game, and 2 wounds every Bleed after that</b>.</li>
+  <li>Take <b>up to 2 actions</b>, in any combination (repeats allowed):</li>
+</ol>
+<table>
+  <tr><th>Action</th><th>Effect</th></tr>
+  <tr><td><b>MUSTER</b></td><td>Play one agent from your hand <b>face down</b> as a new stack on
+    your Front (max 3 stacks).</td></tr>
+  <tr><td><b>ARM</b></td><td>Slide one augment from your hand <b>face down</b> under one of your
+    stacks, never exceeding that agent's slots.</td></tr>
+  <tr><td><b>STRIKE</b></td><td>Attack the enemy <b>player</b> with one of your stacks.</td></tr>
+  <tr><td><b>CHALLENGE</b></td><td>Attack one specific enemy <b>stack</b> with one of your
+    stacks.</td></tr>
+  <tr><td><b>RECALL</b></td><td>Return one of your stacks, with all its cards, to your hand.</td></tr>
+</table>
+<p>Each of your stacks may Strike <i>or</i> Challenge <b>at most once during your own turn</b>;
+blocking on the opponent's turn is always allowed and never limited. A stack may attack the turn
+it is mustered.</p>
+<div class="callout"><b>First-turn handicap:</b> on the game's very first turn, the first player
+<b>draws normally</b> but takes <b>only 1 action</b> and may not Strike or Challenge.</div>
+<p><b>Handling:</b> stacks sit face down with the <b>agent on top</b> and augments beneath in the
+order armed; keep the cards offset enough that <b>card counts are always visible</b>. You may always
+look at the face-down cards in <b>your own Front stacks and your own hand — never your deck</b>.</p>
+
+<h2 id="ranks"><span class="n">§5</span>Agents: The Rank Table</h2>
+<table>
+  <tr><th>Rank</th><th>Value</th><th>Augment slots</th><th>True ceiling*</th><th>Role</th></tr>
+  <tr><td><b>A</b></td><td>14</td><td><b>0</b></td><td>14</td><td>The lone blade — beats any lone
+    K, Q, or J (ties another Ace), costs 1 card to field, never raises, survives ties</td></tr>
+  <tr><td><b>K</b></td><td>13</td><td>1</td><td>25</td><td>The bodyguard — efficient mid-weight,
+    bearer of the Decree</td></tr>
+  <tr><td><b>Q</b></td><td>12</td><td>2</td><td>35</td><td>The tactician — flexible threat</td></tr>
+  <tr><td><b>J</b></td><td>11</td><td>3</td><td>44</td><td>The warlord — biggest ceiling, biggest
+    funeral</td></tr>
+</table>
+<p>* Best on-suit augments plus Loyalty: J♠+10♠+9♠+8♠ = 11+12+11+10 = <b>44</b>;
+Q♠+10♠+9♠ = <b>35</b>; K♠+10♠ = <b>25</b>.</p>
+<p>Because slots are strict and stacks are built face down, <b>stack size is public information</b>:
+a 4-card stack must be a Jack; 3 cards is a Queen or Jack; 2 cards is K, Q, or J; a 1-card stack
+could be anything — including a 14.</p>
+<div class="callout"><b>Legality:</b> every stack is led by exactly one agent and never holds more
+augments than its slots (raised cards included). <b>If a reveal ever shows an illegal stack</b> —
+led by anything but an agent, or over its slots — <b>that stack automatically loses the battle</b>:
+it goes entirely to its owner's Wounds, and the opposing stack returns to its owner's hand spending
+nothing, its suit power triggering as a win. If <b>both</b> revealed stacks are illegal, both go
+entirely to their owners' Wounds as in a tie, and no suit powers trigger. Deployment mistakes
+noticed <b>before</b> any reveal may be freely taken back.</div>
+
+<h2 id="attacks"><span class="n">§6</span>Strike and Challenge</h2>
+<p><b>STRIKE (attack the player).</b> Point at one of your stacks. The defender chooses:</p>
+<ul>
+  <li><b>Block</b> with any one of their Front stacks → <b>Battle</b> (§8); or</li>
+  <li><b>Take the hit</b>: the defender takes wounds equal to the <b>number of cards in the striking
+    stack</b>. The striking stack is <b>not revealed</b> and <b>stays on the Front</b> — exposed to
+    Challenge until it fights, retreats, or is Recalled.</li>
+</ul>
+<p>A defender with no Front stacks cannot block and must take the hit.</p>
+<p><b>CHALLENGE (attack a stack).</b> Point at one of your stacks and one enemy stack. The defender
+chooses:</p>
+<ul>
+  <li><b>Battle</b> with the challenged stack; or</li>
+  <li><b>Retreat</b>: the challenged stack returns, unrevealed, to its owner's hand — but first it
+    <b>pays one of its augments (owner's choice) face up to its owner's Wounds</b>. A lone agent
+    retreats free. The challenger stays deployed.</li>
+</ul>
+<div class="callout"><b>KING'S DECREE:</b> when you declare a Challenge with a King-led stack, you
+may <b>flip the King face up</b> (its augment stays hidden). The defender <b>may not Retreat</b> —
+the battle happens.</div>
+<p>Challenge is how you punish bluff walls and half-built monsters; Strike is how you cash bluffs in.</p>
+
+<h2 id="raise"><span class="n">§7</span>The Raise</h2>
+<p>The moment a battle is locked in — a Strike is blocked, or a Challenge is accepted or forced by
+Decree — there is one raise round <b>before the reveal</b>: <b>starting with the defender</b>, each
+player may slide <b>up to one augment</b> from hand, face down, under their battling stack. Slot
+limits apply (a lone Ace can never raise; a full King cannot). Raised cards are fully part of the
+stack: they count in the total, die with a loser, and can be spent by a winner.</p>
+
+<h2 id="battle"><span class="n">§8</span>Battle</h2>
+<ol>
+  <li><b>Reveal</b> both stacks completely.</li>
+  <li><b>Total</b> each stack: <b>agent value + augment pips + Loyalty (+2 for each augment sharing
+    its agent's suit)</b>.</li>
+  <li><b>Higher total wins:</b>
+    <ul>
+      <li>The <b>loser's entire stack</b> goes face up to the loser's Wounds. Its agent is dead
+        forever.</li>
+      <li>The <b>winner spends exactly one augment of their choice</b> from the winning stack to
+        their <b>own</b> Wounds (a stack with no augments spends nothing). The winner's <b>agent and
+        remaining augments return to its owner's hand</b> — battles exhaust even victors.</li>
+      <li>The winning agent's <b>suit power</b> triggers (§9).</li>
+    </ul></li>
+  <li><b>Tie:</b> both stacks are destroyed entirely — everything to their owners' Wounds; nothing
+    is spent and no suit powers trigger. <b>Exception: an Ace never dies in a tie</b> — it returns
+    to its owner's hand.</li>
+  <li><b>Timing law:</b> all card movements from a battle — the loser's stack, the winner's spend,
+    and the suit power — resolve as <b>one simultaneous step</b>. Defeat is checked <b>only
+    after</b> the battle fully resolves; a Hearts heal can therefore save you from a 13th wound
+    taken in the same battle. If both players are then defeated, apply Simultaneous Defeat
+    (§10).</li>
+</ol>
+
+<h2 id="courts"><span class="n">§9</span>The Four Courts (Suits)</h2>
+<div class="callout">Universal rule — <b>Loyalty:</b> each augment matching its agent's suit counts
+<b>+2</b> in battle.</div>
+<p>Suit powers belong to the <b>agent</b> leading the stack and trigger only on battle wins (or,
+for Clubs, on muster):</p>
+<table>
+  <tr><th>Suit</th><th>Court</th><th>Power</th></tr>
+  <tr><td>♠</td><td><b>SPADES — The Legion</b> (aggression)</td><td>When your ♠ agent wins a battle,
+    the loser takes <b>1 extra wound</b> (normal wound-source order).</td></tr>
+  <tr><td class="suit-r">♥</td><td><b>HEARTS — The Cloister</b> (sustain)</td><td>When your ♥ agent
+    wins a battle <b>in which it spent an augment</b>, you may return <b>one number card from your
+    Wounds to your hand — any except the augment just spent</b>. If no such card exists, nothing
+    happens. Agents stay dead.</td></tr>
+  <tr><td class="suit-r">♦</td><td><b>DIAMONDS — The Exchange</b> (economy)</td><td>When your ♦ agent
+    wins a battle, it <b>spends nothing</b> — all its augments return to your hand. But the enemy
+    has now seen them.</td></tr>
+  <tr><td>♣</td><td><b>CLUBS — The Veil</b> (espionage)</td><td>The <b>first time each Club agent is
+    mustered</b> in the game, you may immediately <b>peek at one face-down card in one enemy Front
+    stack, named by position</b> ("bottom card of that 3-stack"). Peeking tells them you played a
+    Club; you may decline, but declining forfeits that agent's peek permanently. If the enemy has no
+    Front stacks, there is nothing to peek.</td></tr>
+</table>
+
+<h2 id="winning"><span class="n">§10</span>Winning and Losing</h2>
+<p>You <b>win immediately</b> when your opponent:</p>
+<ul>
+  <li>has <b>13 or more wounds</b>, or</li>
+  <li>has <b>no agents left</b> in hand or on their Front.</li>
+</ul>
+<div class="callout"><b>Simultaneous defeat</b> (both players meet a defeat condition — 13+ wounds
+or no agents — after a battle resolves): the player with <b>fewer wounds wins</b>; if wounds are
+equal, the <b>active player wins</b> — attacker's advantage breaks late-game staring contests.</div>
+<p><b>The game must end:</b> every turn removes a card from your deck or wounds you, Bleed escalates
+to 2 wounds per turn, and every battle — an Ace-versus-Ace tie excepted — permanently kills at least
+one of the 16 agents. Two turtles bleed out — and because the first player draws from turn 1 and
+acts first each round, <b>the first player bleeds out first</b>: passivity is always a losing line
+for whoever moved first.</p>
+
+<h2 id="law"><span class="n">§11</span>Table Law</h2>
+<p>All counts are public on request: either player may at any time count the cards in any deck, any
+hand (number of cards, not faces), any stack, or any Wounds pile, and Wounds piles may be inspected
+card by card. Call an audit whenever you like.</p>
+
+<h2 id="edge"><span class="n">§12</span>Edge States (quick reference)</h2>
+<ul>
+  <li><b>Deck empty:</b> the mandatory draw becomes a Bleed (1 wound first time, 2 thereafter).</li>
+  <li><b>Hand empty:</b> you cannot Muster, Arm, or Raise; hand-source wounds skip to your Front.</li>
+  <li><b>No Front stacks:</b> you cannot Strike, Challenge, Recall, or block; a Strike against you
+    must be taken.</li>
+  <li><b>Front full (3 stacks):</b> no Muster until a stack leaves by battle, retreat, or Recall.</li>
+  <li><b>Deck and hand empty, Front holds only agents:</b> wounds take agents.</li>
+  <li><b>No agents in hand or Front:</b> you lose immediately, regardless of other cards.</li>
+</ul>
+
+<h2 id="economy"><span class="n">§13</span>The Economy at a Glance</h2>
+<table>
+  <tr><th>Event</th><th>Your cost</th><th>Their cost</th></tr>
+  <tr><td>Win a battle</td><td>1 augment spent (♦: 0; ♥: swap for an old wound)</td>
+    <td>their whole stack (♠: +1 wound)</td></tr>
+  <tr><td>Lose a battle with an <i>n</i>-card stack</td><td><i>n</i> wounds + a dead agent</td>
+    <td>1 augment</td></tr>
+  <tr><td>Take an unblocked Strike</td><td>wounds = its size</td><td>striker stands exposed</td></tr>
+  <tr><td>Retreat from a Challenge</td><td>1 augment (lone agent: free)</td><td>—</td></tr>
+  <tr><td>Tie</td><td>whole stack (Aces walk away)</td><td>whole stack (Aces walk away)</td></tr>
+  <tr><td>Do nothing (deck empty)</td><td>1 wound, then 2/turn</td><td>same clock</td></tr>
+</table>
+
+<h2 id="reading"><span class="n">§14</span>Reading the Table</h2>
+<p>All information asymmetry is bounded and countable, by design:</p>
+<ul>
+  <li><b>Stack size → rank range</b> (4 cards = Jack, guaranteed — raises respect slots).</li>
+  <li><b>Wounds are face up</b> — count the dead to know which suits, tens, and agents remain.</li>
+  <li><b>Retreats leak</b>: the augment paid to Wounds is public; only lone agents flee clean.</li>
+  <li><b>Unblocked strikers stay deployed</b> — unrevealed, but a standing, challengeable threat.</li>
+  <li><b>Returned winners and raised-then-returned cards are known</b> until redeployed face down
+    among bluffs.</li>
+  <li><b>A Decree King confesses itself</b> — the price of forcing the call.</li>
+</ul>
+
+<h2 id="draft"><span class="n">§15</span>Variant: The Court Draft (advanced setup)</h2>
+<p>After splitting agents from augments, skip the random deal: <b>Player A takes any one complete
+suit</b> (its A, K, Q, J and all nine number cards), <b>Player B takes two of the remaining three
+suits, and A takes the last.</b> Each player thus owns exactly 26 cards — 8 agents and 18 augments,
+same as the standard game. Shuffle your 18 augments as your deck, draw 4; higher revealed top card
+chooses who goes first as usual. Every other rule is unchanged.</p>
+<p>Recommended after a few games: the six court-pair matchups (Legion+Cloister vs Exchange+Veil,
+and so on) turn the suits into chosen classes, Loyalty into a plan, and the Wounds piles into
+perfect-information card-counting.</p>
+
+<footer>
+  <p><a class="navbtns" href="index.html" style="color:var(--gold)">▶ Play CROWNFALL</a> ·
+     <a href="tutorial.html">Tutorial</a> ·
+     <a href="https://github.com/Hydrodynamical/crownfall">Source on GitHub</a></p>
+  <p>One deck. Twenty-six heartbeats. One crown.</p>
+</footer>
+</main>
+</div>
+</body>
+</html>

@@ -571,6 +571,11 @@ function render(){
            <input type="text" id="n2" placeholder="Player 2 name" value="Player 2"></p>
         <button class="primary" id="dealBtn">Deal the courts</button>
         ${saved?`<button id="resumeBtn">Resume saved game</button>`:""}
+        <div style="margin-top:10px;font-size:14px">
+          <a href="tutorial.html" style="color:var(--gold)">🎓 Learn to play — the tutorial</a>
+          &nbsp;·&nbsp;
+          <a href="rules.html" target="_blank" rel="noopener" style="color:var(--gold)">⚖ Rulebook</a>
+        </div>
       </div>
       <div class="zone small">
         <b>The game in one breath:</b> your 26 cards are your life. Face cards are agents
@@ -620,7 +625,8 @@ function render(){
       <div class="zone center"><h2 style="color:var(--gold)">${esc(w.name)} WINS</h2>
       <p>${esc(G.condition)} — final wounds: ${esc(w.name)} ${w.wounds.length}/13,
       ${esc(l.name)} ${l.wounds.length}/13</p>
-      ${btn("New game",{t:"newGame"},"primary")}</div>
+      ${btn("New game",{t:"newGame"},"primary")}
+      <div style="margin-top:8px;font-size:13px"><a href="rules.html" target="_blank" rel="noopener" style="color:var(--gold)">⚖ Settle the argument — rulebook</a></div></div>
       <div class="zone"><h3>${esc(P(0).name)} — wounds</h3>${woundsHTML(P(0))}</div>
       <div class="zone"><h3>${esc(P(1).name)} — wounds</h3>${woundsHTML(P(1))}</div>
       ${logHTML()}`;

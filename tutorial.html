@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to Play — CROWNFALL</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%91%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --felt:#0d2818; --felt2:#123522; --ink:#e8e2d4; --dim:#9aa78f;
+    --gold:#d4af37; --red:#c0392b; --cardface:#f6f2e7; --cardink:#1b1b1f;
+    --danger:#e05545; --accent:#5dcaa5;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--felt);color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+  a{color:var(--gold)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px 80px}
+  header.hero{text-align:center;padding:48px 18px 8px}
+  h1.title{font-size:44px;letter-spacing:8px;color:var(--gold);margin:0}
+  .tagline{color:var(--dim);font-style:italic;margin:6px 0 18px}
+  .navbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+  .btn{display:inline-block;border:1px solid var(--gold);border-radius:10px;
+    background:#1b3a29;color:var(--ink);padding:10px 18px;text-decoration:none;font-size:15px}
+  .btn.primary{background:var(--gold);color:#22200f;font-weight:bold}
+  h2{color:var(--gold);letter-spacing:2px;font-size:22px;margin:48px 0 6px;
+    border-bottom:1px solid #2c5540;padding-bottom:8px}
+  h2 .n{color:var(--dim);font-size:15px;letter-spacing:0;margin-right:8px}
+  p.lead{color:var(--dim);font-style:italic;margin-top:0}
+  .zone{background:var(--felt2);border:1px solid #234a35;border-radius:14px;
+    padding:16px;margin:14px 0}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .idea{background:var(--felt2);border:1px solid #234a35;border-radius:14px;padding:14px}
+  .idea b{color:var(--gold)}
+  .idea .big{font-size:28px;display:block;margin-bottom:6px}
+  /* cards */
+  .card{width:58px;height:82px;border-radius:7px;background:var(--cardface);
+    color:var(--cardink);position:relative;display:inline-block;flex:none;
+    border:1px solid #b9b2a0;box-shadow:0 2px 4px rgba(0,0,0,.5);vertical-align:top}
+  .card .c{position:absolute;top:4px;left:6px;font-size:15px;font-weight:bold;line-height:1.05}
+  .card .s{position:absolute;bottom:3px;right:6px;font-size:27px}
+  .card.red{color:var(--red)}
+  .card.back{background:repeating-linear-gradient(45deg,#5b2333 0 6px,#4a1c29 6px 12px);
+    border-color:#7a3346}
+  .card.back::after{content:"❦";position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;color:#c98b9b;font-size:22px}
+  .stack{display:inline-flex;flex-direction:column;align-items:center;margin:6px 10px}
+  .stack .card{display:block;margin-top:-58px}
+  .stack .card:first-child{margin-top:0}
+  .stack .tag{font-size:12.5px;color:var(--dim);margin-top:6px;text-align:center;max-width:120px}
+  .stack .tag b{color:var(--gold)}
+  .row{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:6px}
+  /* rank table */
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:10px 0}
+  th,td{border:1px solid #2c5540;padding:8px 10px;text-align:left;vertical-align:top}
+  th{color:var(--gold);letter-spacing:1px;font-size:12.5px;text-transform:uppercase;background:#0a1f13}
+  td b{color:var(--gold)}
+  .center{text-align:center}
+  /* flow diagram */
+  .flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:14px 0}
+  .fbox{background:#0a1f13;border:1px solid #2c5540;border-radius:10px;
+    padding:10px 16px;text-align:center;font-size:14.5px;max-width:420px}
+  .fbox b{color:var(--gold)}
+  .fbox.hot{border-color:#6e3030;background:#301b1b}
+  .fbox.hot b{color:var(--danger)}
+  .farrow{color:var(--dim);font-size:18px;padding:2px 0}
+  .fsplit{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .math{font-size:15px;text-align:center;color:var(--dim);margin:8px 0}
+  .math b{color:var(--gold);font-size:17px}
+  /* courts */
+  .court{display:flex;gap:14px;align-items:flex-start;background:var(--felt2);
+    border:1px solid #234a35;border-radius:14px;padding:14px;margin:10px 0}
+  .court svg{flex:none}
+  .court h3{margin:0 0 4px;color:var(--gold);letter-spacing:1px;font-size:17px}
+  .court .mn{color:var(--dim);font-style:italic;font-size:13.5px;margin-top:6px}
+  /* stepper */
+  .stepper{background:var(--felt2);border:1px solid #234a35;border-radius:14px;padding:16px}
+  .stepper .stephead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .stepper .stephead b{color:var(--gold);letter-spacing:1px}
+  .stepper button{font-family:inherit;font-size:14px;border:1px solid var(--gold);
+    border-radius:8px;background:#1b3a29;color:var(--ink);padding:7px 14px;cursor:pointer}
+  .stepper button:disabled{opacity:.3;cursor:default}
+  .stepbody .cards{margin:10px 0}
+  .trap{margin:10px 0;padding:12px 14px;background:var(--felt2);
+    border-left:3px solid var(--danger);border-radius:0 10px 10px 0}
+  .trap b{color:var(--danger)}
+  footer{margin-top:56px;text-align:center;color:var(--dim);font-size:13.5px;
+    border-top:1px solid #2c5540;padding-top:18px}
+  .kicker{color:var(--danger);letter-spacing:3px;font-size:12px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="kicker">learn to play in ten minutes</div>
+  <h1 class="title">CROWNFALL</h1>
+  <div class="tagline">Bluff with your blood — every card you own is a hit point.</div>
+  <div class="navbtns">
+    <a class="btn primary" href="index.html">▶ Play now</a>
+    <a class="btn" href="rules.html" target="_blank" rel="noopener">⚖ Full rulebook</a>
+  </div>
+</header>
+<div class="wrap">
+
+<h2><span class="n">1</span>The whole game in one breath</h2>
+<p class="lead">One ordinary 52-card deck. Two players. Fifteen to thirty minutes.</p>
+<div class="grid3">
+  <div class="idea"><span class="big">🫀</span><b>Your cards are your life.</b>
+    You own 26 cards — deck, hand, and army all at once. Every card you lose is a wound.
+    Your <b>13th wound is fatal</b>.</div>
+  <div class="idea"><span class="big">🂠</span><b>Everything is face down.</b>
+    Your opponent can count your cards but never read them. Size is public;
+    strength is a secret — until battle turns the cards.</div>
+  <div class="idea"><span class="big">🗡</span><b>Even victory costs.</b>
+    There is no mana. Winning a fight burns one of your own cards.
+    Losing burns your whole stack. Waiting burns you alive.</div>
+</div>
+
+<h2><span class="n">2</span>The cast: your eight agents</h2>
+<p>Face-value cards are <b>agents</b> — your fighters. You're dealt two of each rank, random suits.
+Number cards 2–10 are <b>augments</b>: hidden weapons you tuck beneath an agent to raise its total.
+Each rank carries a different amount:</p>
+<div class="row">
+  <div class="stack"><div class="card"><div class="c">A<br>♠</div><div class="s">♠</div></div>
+    <div class="tag"><b>Ace = 14</b><br>0 augments<br>the lone blade</div></div>
+  <div class="stack"><div class="card"><div class="c">K<br>♠</div><div class="s">♠</div></div>
+    <div class="tag"><b>King = 13</b><br>1 augment<br>the bodyguard</div></div>
+  <div class="stack"><div class="card"><div class="c">Q<br>♠</div><div class="s">♠</div></div>
+    <div class="tag"><b>Queen = 12</b><br>2 augments<br>the tactician</div></div>
+  <div class="stack"><div class="card"><div class="c">J<br>♠</div><div class="s">♠</div></div>
+    <div class="tag"><b>Jack = 11</b><br>3 augments<br>the warlord</div></div>
+</div>
+<p>Raw power trades against capacity: the Ace is the strongest <i>alone</i> and can never grow;
+the humble Jack can tower to <b>44</b>. That trade-off runs the whole game.</p>
+
+<h2><span class="n">3</span>Stacks — and the tell you can't hide</h2>
+<p>You deploy an agent <b>face down</b> and arm it with face-down augments. Everyone can count
+the cards in a stack — nobody can see them. Because each rank has strict slots, <b>size leaks
+rank but never strength</b>:</p>
+<div class="row">
+  <div class="stack">
+    <div class="card back"></div>
+    <div class="tag">1 card<br><b>anything</b> — a 14… or a bluff</div></div>
+  <div class="stack">
+    <div class="card back"></div><div class="card back"></div>
+    <div class="tag">2 cards<br><b>K, Q or J</b></div></div>
+  <div class="stack">
+    <div class="card back"></div><div class="card back"></div><div class="card back"></div>
+    <div class="tag">3 cards<br><b>Q or J</b></div></div>
+  <div class="stack">
+    <div class="card back"></div><div class="card back"></div><div class="card back"></div><div class="card back"></div>
+    <div class="tag">4 cards<br><b>Jack, guaranteed</b></div></div>
+</div>
+<p class="math">Battle math, the only formula in the game:<br>
+<b>total = agent + augment pips + 2 per augment matching the agent's suit</b><br>
+That +2 is called <b>Loyalty</b> — suit-matched steel fights harder.</p>
+
+<h2><span class="n">4</span>Your turn</h2>
+<div class="zone">
+  <p style="margin-top:0"><b style="color:var(--gold)">1. Draw a card.</b> Mandatory. If your deck
+  is empty you <b>Bleed</b> instead: 1 wound the first time, <b>2 every time after</b>.
+  The clock never stops — hoarding is just losing slowly.</p>
+  <p><b style="color:var(--gold)">2. Take up to two actions</b>, any mix:</p>
+  <table>
+    <tr><th>Muster</th><td>Play an agent from hand, face down, to your front (max 3 stacks).</td></tr>
+    <tr><th>Arm</th><td>Tuck an augment from hand, face down, under a stack (respect its slots).</td></tr>
+    <tr><th>Strike</th><td>Send a stack at the enemy <b>player</b>.</td></tr>
+    <tr><th>Challenge</th><td>Send a stack at an enemy <b>stack</b>.</td></tr>
+    <tr><th>Recall</th><td>Take one of your stacks back into your hand.</td></tr>
+  </table>
+  <p style="margin-bottom:0" class="math">Each stack may attack once per turn. Blocking is always free.
+  <i>(The game's very first turn: 1 action, no attacks.)</i></p>
+</div>
+
+<h2><span class="n">5</span>Combat: the strike, the challenge, the raise</h2>
+<div class="flow">
+  <div class="fsplit">
+    <div class="fbox"><b>STRIKE</b> hits the player.<br>They block with a stack — or take
+      <b>wounds equal to your stack's size</b>, and you never show a card.<br>
+      <i>Yes: three pieces of garbage hit for 3 real wounds if nobody calls it.</i></div>
+    <div class="fbox"><b>CHALLENGE</b> duels a stack.<br>They fight — or retreat it to hand,
+      <b>paying one augment as a toll</b> (a lone agent flees free).<br>
+      <i>A King may flip face up — the <b>Decree</b> — and forbid retreat.</i></div>
+  </div>
+  <div class="farrow">▼ battle locked ▼</div>
+  <div class="fbox"><b>THE RAISE</b> — defender first, each side may slide <b>one</b> hidden augment
+    from hand under its fighter. The last poker move before the truth.</div>
+  <div class="farrow">▼</div>
+  <div class="fbox hot"><b>REVEAL.</b> Higher total wins. The loser's whole stack becomes wounds —
+    its agent is dead forever. The winner <b>spends one augment to their own wounds</b>,
+    takes the rest home, and their suit power fires. Ties destroy both stacks
+    (a lone Ace walks away).</div>
+</div>
+
+<h2><span class="n">6</span>The four courts</h2>
+<p class="lead">Suits are classes. The emblem tells you the power.</p>
+
+<div class="court">
+  <svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Legion emblem: a spade pierced by a sword">
+    <line x1="28" y1="6" x2="28" y2="50" stroke="#d4af37" stroke-width="2.5"/>
+    <line x1="20" y1="43" x2="36" y2="43" stroke="#d4af37" stroke-width="2.5"/>
+    <path d="M28 10 C22 20 14 24 14 31 c0 5 4 8 8 8 2 0 4-1 6-3 2 2 4 3 6 3 4 0 8-3 8-8 0-7-8-11-14-21z" fill="#e8e2d4"/>
+    <line x1="28" y1="14" x2="28" y2="36" stroke="#0d2818" stroke-width="2"/>
+  </svg>
+  <div><h3>♠ SPADES — The Legion</h3>
+    <div>Win a battle → the loser takes <b style="color:var(--gold)">one extra wound</b>.</div>
+    <div class="mn">The sword through the spade: every victory cuts twice. The aggro suit.</div></div>
+</div>
+<div class="court">
+  <svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Cloister emblem: a heart bearing a healer's cross">
+    <path d="M28 46 C14 36 8 28 8 20 8 13 13 9 19 9 c4 0 7 2 9 5 2-3 5-5 9-5 6 0 11 4 11 11 0 8-6 16-20 26z" fill="#c0392b"/>
+    <rect x="25.5" y="17" width="5" height="16" rx="1.5" fill="#f6f2e7"/>
+    <rect x="20" y="22.5" width="16" height="5" rx="1.5" fill="#f6f2e7"/>
+  </svg>
+  <div><h3>♥ HEARTS — The Cloister</h3>
+    <div>Win a battle in which you spent an augment → <b style="color:var(--gold)">recover a different
+    number card from your wounds</b> to hand.</div>
+    <div class="mn">The cross on the heart: the only court that heals. The attrition suit.</div></div>
+</div>
+<div class="court">
+  <svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Exchange emblem: a diamond cut as a coin-gem">
+    <circle cx="28" cy="28" r="21" fill="none" stroke="#d4af37" stroke-width="2.5"/>
+    <path d="M28 12 L41 28 L28 44 L15 28 z" fill="#c0392b"/>
+    <path d="M28 12 L41 28 L28 44" fill="#e05545" opacity=".45"/>
+    <line x1="21" y1="21" x2="24" y2="18" stroke="#f6f2e7" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <div><h3>♦ DIAMONDS — The Exchange</h3>
+    <div>Win a battle → <b style="color:var(--gold)">spend nothing</b>; every augment returns to your hand.</div>
+    <div class="mn">The gem in the coin: victory is free — but the enemy has seen your treasure. The economy suit.</div></div>
+</div>
+<div class="court">
+  <svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Veil emblem: a club bearing an open eye">
+    <circle cx="28" cy="17" r="9" fill="#e8e2d4"/>
+    <circle cx="18" cy="30" r="9" fill="#e8e2d4"/>
+    <circle cx="38" cy="30" r="9" fill="#e8e2d4"/>
+    <rect x="25.5" y="32" width="5" height="14" fill="#e8e2d4"/>
+    <ellipse cx="28" cy="26" rx="9" ry="5.5" fill="#0d2818"/>
+    <circle cx="28" cy="26" r="2.6" fill="#d4af37"/>
+  </svg>
+  <div><h3>♣ CLUBS — The Veil</h3>
+    <div>The first time each Club agent is mustered → <b style="color:var(--gold)">peek at one face-down
+    enemy card</b>, named by position.</div>
+    <div class="mn">The eye in the club: play with the lights on. The espionage suit.</div></div>
+</div>
+
+<h2><span class="n">7</span>Watch one turn play out</h2>
+<p class="lead">Maya (6 wounds) vs Liam (8 wounds). Step through the exchange that decides a King's life.</p>
+<div class="stepper" id="stepper">
+  <div class="stephead">
+    <button id="prev">◀ Back</button><b id="steptitle"></b><button id="next">Next ▶</button>
+  </div>
+  <div class="stepbody" id="stepbody"></div>
+</div>
+
+<h2><span class="n">8</span>Wounds, and how the game ends</h2>
+<div class="zone">
+  <p style="margin-top:0">Wounds go <b>face up</b> in a public pile — the whole table watches the dead
+  accumulate and counts what's left. When you must take a wound, it comes from the top of your
+  <b>deck</b>; when the deck is gone, your opponent pulls <b>blind from your hand</b>; when even that
+  is empty, your <b>front</b> is stripped.</p>
+  <p style="margin-bottom:0">You win the moment your opponent has <b style="color:var(--danger)">13 wounds</b> —
+  or <b>no agents left</b>. And the game <i>must</i> end: the draw is mandatory, the Bleed escalates,
+  and almost every battle kills an agent forever. Two turtles bleed out. The crown falls on whoever
+  moves best, not whoever waits longest.</p>
+</div>
+
+<h2><span class="n">9</span>Five traps every new player falls into</h2>
+<div class="trap"><b>Building a tower and admiring it.</b> A 4-card stack shouts "Jack," invites
+retreats, and is a 4-wound funeral if a lean Queen out-reveals it. Winning by 1 is the aesthetic.</div>
+<div class="trap"><b>Taking every hit.</b> Chip strikes cost wounds equal to stack size. Around the
+third unblocked strike, start calling bluffs — executing a bluffer's agent is how you get paid.</div>
+<div class="trap"><b>Hoarding.</b> Cards in hand feel like health. But your deck is a fuse, and when
+it burns out the Bleed eats 2 wounds a turn — and blind hand-pulls can execute your Aces.</div>
+<div class="trap"><b>Ignoring the wounds pile.</b> It's face up for a reason. If three tens are dead
+and you hold the fourth, you know exactly what no 2-card stack can beat.</div>
+<div class="trap"><b>Disrespecting the naked Ace.</b> One card. Fourteen points. Kills any lone
+K, Q, or J, walks away from ties — and can never, ever grow. It teaches you the whole game.</div>
+
+<footer>
+  <p><a class="btn primary" href="index.html">▶ Play CROWNFALL now</a>
+     <a class="btn" href="rules.html" target="_blank" rel="noopener">⚖ Read the full rulebook</a></p>
+  <p>One deck. Twenty-six heartbeats. <a href="https://github.com/Hydrodynamical/crownfall">Source &amp; design notes on GitHub</a>.</p>
+</footer>
+</div>
+
+<script>
+const card=(r,s,red)=>`<div class="card ${red?"red":""}"><div class="c">${r}<br>${s}</div><div class="s">${s}</div></div>`;
+const back=`<div class="card back"></div>`;
+const STEPS=[
+ {t:"The table",h:`<p>Maya's front holds a 2-card stack — secretly <b>K♦ + 9♦</b> (total 24, Loyalty included).
+   Liam has two stacks: a 2-card mystery (secretly <b>J♥ + 4♥</b>) and a lone card. His wounds pile
+   shows an old <b>7♠</b>, and he's holding an <b>8♥</b>.</p>
+   <div class="cards row"><div class="stack">${back}${back}<div class="tag">Maya: [K♦ 9♦] = 24</div></div>
+   <div class="stack">${back}${back}<div class="tag">Liam: [J♥ 4♥] = 17</div></div>
+   <div class="stack">${back}<div class="tag">Liam: ???</div></div></div>`},
+ {t:"Muster + the Veil",h:`<p>Maya deploys <b>J♣ face down</b>. It's that Club's first muster, so the Veil fires:
+   she names "the bottom card of your 2-stack" — and sees Liam's <b>4♥</b>. A 2-card stack is K, Q or J…
+   with a mere 4 aboard, it totals <b>at most 19</b>.</p>
+   <div class="cards row">${card("J","♣")}<div class="stack">${back}${card("4","♥",1)}<div class="tag">peeked!</div></div></div>`},
+ {t:"The Strike",h:`<p>Maya's hidden K♦ stack strikes Liam directly. Taking the hit means 2 wounds — he'd be
+   at 10 of 13 with the striker still standing. Armed with a read of his own, he <b>blocks</b> with
+   the very stack Maya just scouted.</p>`},
+ {t:"The Raise",h:`<p>Defender first: Liam slides his <b>8♥ face down</b> under the blocker. Three cards now —
+   so it's a Queen or Jack, and Maya knows its 19 just grew by something. Her King's single slot is
+   already full. She cannot answer.</p>
+   <div class="cards row"><div class="stack">${back}${back}${back}<div class="tag">Liam raises to 3</div></div></div>`},
+ {t:"The Reveal",h:`<p class="math"><b>Maya: K♦ + 9♦ = 13 + 9 + 2 Loyalty = 24</b><br>
+   <b>Liam: J♥ + 4♥ + 8♥ = 11 + 6 + 10 = 27</b><br>Liam wins, 27–24.</p>
+   <div class="cards row">${card("K","♦",1)}${card("9","♦",1)}
+   <span style="align-self:center;color:var(--dim)">vs</span>
+   ${card("J","♥",1)}${card("4","♥",1)}${card("8","♥",1)}</div>`},
+ {t:"The price of everything",h:`<p>Maya's <b>whole stack</b> goes face up to her wounds — 8 of 13, and her K♦ is dead
+   forever. Liam, the winner, still pays: he spends the <b>4♥</b> to his own wounds (9 of 13).
+   But his agent was a <b>Heart</b> — the Cloister fires, and the old <b>7♠</b> rises from his wounds
+   back to his hand (back to 8 of 13).</p>`},
+ {t:"The ledger",h:`<p>Maya is down a King and two wounds — but her fresh J♣ sits unread, ready to grow toward 44.
+   Liam won the fight, yet Maya now knows three of his cards. <b>Nobody got away clean. Nobody ever
+   does.</b></p><p class="math">That's Crownfall. <a href="index.html">Deal the courts →</a></p>`},
+];
+let si=0;
+const render=()=>{
+  document.getElementById("steptitle").textContent=`Step ${si+1} of ${STEPS.length} — ${STEPS[si].t}`;
+  document.getElementById("stepbody").innerHTML=STEPS[si].h;
+  document.getElementById("prev").disabled=si===0;
+  document.getElementById("next").disabled=si===STEPS.length-1;
+};
+document.getElementById("prev").onclick=()=>{if(si>0)si--;render();};
+document.getElementById("next").onclick=()=>{if(si<STEPS.length-1)si++;render();};
+render();
+</script>
+</body>
+</html>
