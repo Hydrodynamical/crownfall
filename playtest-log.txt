@@ -1,0 +1,146 @@
+CROWNFALL playtest — featured game (seed 207, Vesper vs Rook)
+Omniscient log: bracketed cards are secret at the table.
+
+Opening reveal: Vesper 9♠ vs Rook 10♠ — Rook chooses seating.
+Rook (aggressive tempo) goes first. Vesper (patient value) second.
+── Turn 1 — Rook (wounds 0/13, deck 14, hand 12, front 0) ──
+  Draws [7♠] (deck 13).
+  MUSTER: Rook deploys a face-down agent [J♠] (front: 1).
+── Turn 2 — Vesper (wounds 0/13, deck 14, hand 12, front 0) ──
+  Draws [9♠] (deck 13).
+  MUSTER: Vesper deploys a face-down agent [J♦] (front: 1).
+  ARM: Vesper slides a hidden augment [10♦] under a stack (now 2 cards, total 23).
+── Turn 3 — Rook (wounds 0/13, deck 13, hand 12, front 1) ──
+  Draws [6♥] (deck 12).
+  MUSTER: Rook deploys a face-down agent [J♣] (front: 2).
+    ♣ The Veil: Rook peeks the top of Vesper's 2-stack — sees [J♦].
+  ARM: Rook slides a hidden augment [7♠] under a stack (now 2 cards, total 20).
+── Turn 4 — Vesper (wounds 0/13, deck 13, hand 11, front 1) ──
+  Draws [5♥] (deck 12).
+  ARM: Vesper slides a hidden augment [9♦] under a stack (now 3 cards, total 34).
+  MUSTER: Vesper deploys a face-down agent [J♥] (front: 2).
+── Turn 5 — Rook (wounds 0/13, deck 12, hand 11, front 2) ──
+  Draws [4♣] (deck 11).
+  ARM: Rook slides a hidden augment [6♠] under a stack (now 3 cards, total 28).
+  CHALLENGE: Rook's 3-stack [J♠+7♠+6♠] calls out Vesper's 1-stack.
+    Vesper RETREATS the lone agent (free).
+── Turn 6 — Vesper (wounds 0/13, deck 12, hand 11, front 1) ──
+  Draws [7♦] (deck 11).
+  MUSTER: Vesper deploys a face-down agent [J♥] (front: 2).
+  ARM: Vesper slides a hidden augment [10♣] under a stack (now 2 cards, total 21).
+── Turn 7 — Rook (wounds 0/13, deck 11, hand 11, front 2) ──
+  Draws [7♣] (deck 10).
+  CHALLENGE: Rook's 3-stack [J♠+7♠+6♠] calls out Vesper's 2-stack.
+      Vesper wounds: 10♣ → 1/13 (retreat toll)
+    Vesper RETREATS the stack (pays 10♣).
+  ARM: Rook slides a hidden augment [7♣] under a stack (now 2 cards, total 20).
+── Turn 8 — Vesper (wounds 1/13, deck 11, hand 11, front 1) ──
+  Draws [2♠] (deck 10).
+  MUSTER: Vesper deploys a face-down agent [J♥] (front: 2).
+  ARM: Vesper slides a hidden augment [9♠] under a stack (now 2 cards, total 20).
+── Turn 9 — Rook (wounds 0/13, deck 10, hand 11, front 2) ──
+  Draws [5♦] (deck 9).
+  CHALLENGE: Rook's 3-stack [J♠+7♠+6♠] calls out Vesper's 2-stack.
+      Vesper wounds: 9♠ → 2/13 (retreat toll)
+    Vesper RETREATS the stack (pays 9♠).
+  ARM: Rook slides a hidden augment [6♥] under a stack (now 3 cards, total 26).
+── Turn 10 — Vesper (wounds 2/13, deck 10, hand 11, front 1) ──
+  Draws [8♥] (deck 9).
+  MUSTER: Vesper deploys a face-down agent [J♥] (front: 2).
+  ARM: Vesper slides a hidden augment [8♥] under a stack (now 2 cards, total 21).
+── Turn 11 — Rook (wounds 0/13, deck 9, hand 11, front 2) ──
+  Draws [4♠] (deck 8).
+  CHALLENGE: Rook's 3-stack [J♠+7♠+6♠] calls out Vesper's 2-stack.
+      Vesper wounds: 8♥ → 3/13 (retreat toll)
+    Vesper RETREATS the stack (pays 8♥).
+  STRIKE: Rook's 3-stack [J♣+7♣+6♥] attacks Vesper.
+    Vesper BLOCKS with a 3-stack.
+    Raise: Rook slides a hidden augment under the stack [4♣] — now 4 cards.
+    ⚔ REVEAL: Rook J♣+7♣+6♥+4♣ = 32  vs  Vesper J♦+10♦+9♦ = 34
+    Vesper WINS 34–32.
+      Rook wounds: J♣ → 1/13 (battle loss)
+      Rook wounds: 7♣ → 2/13 (battle loss)
+      Rook wounds: 6♥ → 3/13 (battle loss)
+      Rook wounds: 4♣ → 4/13 (battle loss)
+      ♦ The Exchange: Vesper spends nothing; augments return (and are now known).
+── Turn 12 — Vesper (wounds 3/13, deck 9, hand 14, front 0) ──
+  Draws [8♠] (deck 8).
+  MUSTER: Vesper deploys a face-down agent [J♦] (front: 1).
+  ARM: Vesper slides a hidden augment [10♦] under a stack (now 2 cards, total 23).
+── Turn 13 — Rook (wounds 4/13, deck 8, hand 11, front 1) ──
+  Draws [5♠] (deck 7).
+  STRIKE: Rook's 3-stack [J♠+7♠+6♠] attacks Vesper.
+    Vesper takes the hit: 3 wound(s). Striker stays hidden.
+      Vesper wounds: 4♥ → 4/13 (unblocked strike)
+      Vesper wounds: 5♣ → 5/13 (unblocked strike)
+      Vesper wounds: 10♥ → 6/13 (unblocked strike)
+  MUSTER: Rook deploys a face-down agent [Q♦] (front: 2).
+── Turn 14 — Vesper (wounds 6/13, deck 5, hand 13, front 1) ──
+  Draws [7♥] (deck 4).
+  ARM: Vesper slides a hidden augment [9♦] under a stack (now 3 cards, total 34).
+  CHALLENGE: Vesper's 3-stack [J♦+10♦+9♦] calls out Rook's 3-stack.
+    ⚔ REVEAL: Vesper J♦+10♦+9♦ = 34  vs  Rook J♠+7♠+6♠ = 28
+    Vesper WINS 34–28.
+      Rook wounds: J♠ → 5/13 (battle loss)
+      Rook wounds: 7♠ → 6/13 (battle loss)
+      Rook wounds: 6♠ → 7/13 (battle loss)
+      ♦ The Exchange: Vesper spends nothing; augments return (and are now known).
+── Turn 15 — Rook (wounds 7/13, deck 7, hand 11, front 1) ──
+  Draws [10♠] (deck 6).
+  ARM: Rook slides a hidden augment [10♠] under a stack (now 2 cards, total 22).
+  STRIKE: Rook's 2-stack [Q♦+10♠] attacks Vesper.
+    Vesper takes the hit: 2 wound(s). Striker stays hidden.
+      Vesper wounds: 3♣ → 7/13 (unblocked strike)
+      Vesper wounds: 3♥ → 8/13 (unblocked strike)
+── Turn 16 — Vesper (wounds 8/13, deck 2, hand 16, front 0) ──
+  Draws [9♣] (deck 1).
+  MUSTER: Vesper deploys a face-down agent [J♦] (front: 1).
+  ARM: Vesper slides a hidden augment [10♦] under a stack (now 2 cards, total 23).
+── Turn 17 — Rook (wounds 7/13, deck 6, hand 11, front 1) ──
+  Draws [8♣] (deck 5).
+  MUSTER: Rook deploys a face-down agent [Q♥] (front: 2).
+  ARM: Rook slides a hidden augment [8♣] under a stack (now 2 cards, total 20).
+── Turn 18 — Vesper (wounds 8/13, deck 1, hand 15, front 1) ──
+  Draws [2♦] (deck 0).
+  ARM: Vesper slides a hidden augment [9♦] under a stack (now 3 cards, total 34).
+  MUSTER: Vesper deploys a face-down agent [J♥] (front: 2).
+── Turn 19 — Rook (wounds 7/13, deck 5, hand 10, front 2) ──
+  Draws [3♠] (deck 4).
+  ARM: Rook slides a hidden augment [5♦] under a stack (now 3 cards, total 29).
+  STRIKE: Rook's 3-stack [Q♦+10♠+5♦] attacks Vesper.
+    Vesper BLOCKS with a 3-stack.
+    ⚔ REVEAL: Rook Q♦+10♠+5♦ = 29  vs  Vesper J♦+10♦+9♦ = 34
+    Vesper WINS 34–29.
+      Rook wounds: Q♦ → 8/13 (battle loss)
+      Rook wounds: 10♠ → 9/13 (battle loss)
+      Rook wounds: 5♦ → 10/13 (battle loss)
+      ♦ The Exchange: Vesper spends nothing; augments return (and are now known).
+── Turn 20 — Vesper (wounds 8/13, deck 0, hand 17, front 1) ──
+  Deck empty — BLEEDS 1.
+      Vesper wounds: A♠ → 9/13 (bleed)
+  ARM: Vesper slides a hidden augment [10♦] under a stack (now 2 cards, total 21).
+  MUSTER: Vesper deploys a face-down agent [J♦] (front: 2).
+── Turn 21 — Rook (wounds 10/13, deck 4, hand 10, front 1) ──
+  Draws [8♦] (deck 3).
+  MUSTER: Rook deploys a face-down agent [K♦] (front: 2).
+  ARM: Rook slides a hidden augment [8♦] under a stack (now 2 cards, total 23).
+── Turn 22 — Vesper (wounds 9/13, deck 0, hand 14, front 2) ──
+  Deck empty — BLEEDS 2.
+      Vesper wounds: Q♣ → 10/13 (bleed)
+      Vesper wounds: A♣ → 11/13 (bleed)
+  ARM: Vesper slides a hidden augment [9♦] under a stack (now 2 cards, total 22).
+  ARM: Vesper slides a hidden augment [7♦] under a stack (now 3 cards, total 31).
+── Turn 23 — Rook (wounds 10/13, deck 3, hand 9, front 2) ──
+  Draws [9♥] (deck 2).
+  ARM: Rook slides a hidden augment [9♥] under a stack (now 3 cards, total 31).
+  STRIKE: Rook's 3-stack [Q♥+8♣+9♥] attacks Vesper.
+    Vesper BLOCKS with a 3-stack.
+    ⚔ REVEAL: Rook Q♥+8♣+9♥ = 31  vs  Vesper J♦+9♦+7♦ = 31
+      Rook wounds: Q♥ → 11/13 (tie: stack destroyed)
+      Rook wounds: 8♣ → 12/13 (tie: stack destroyed)
+      Rook wounds: 9♥ → 13/13 (tie: stack destroyed)
+      Vesper wounds: J♦ → 12/13 (tie: stack destroyed)
+      Vesper wounds: 9♦ → 13/13 (tie: stack destroyed)
+      Vesper wounds: 7♦ → 14/13 (tie: stack destroyed)
+
+☠ GAME OVER on turn 23: Rook WINS (simultaneous). Final wounds — Rook 13/13, Vesper 14/13.

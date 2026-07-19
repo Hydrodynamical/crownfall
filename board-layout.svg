@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="680" viewBox="0 0 800 680" role="img">
+  <title>Crownfall play mat</title>
+  <desc>Table layout for Crownfall: each player has a deck, a private hand, a face-up wounds pile, and a front of up to three face-down stacks, separated by the battlefield.</desc>
+
+  <!-- background -->
+  <rect x="0" y="0" width="800" height="680" fill="#FFFFFF"/>
+
+  <!-- title -->
+  <text x="400" y="40" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-weight="bold" fill="#26215C">CROWNFALL — PLAY MAT</text>
+  <text x="400" y="62" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#5F5E5A">Two players face each other across the battlefield · health = 26 − wounds · 13 wounds = death</text>
+
+  <!-- ===== opponent side ===== -->
+  <text x="400" y="92" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" letter-spacing="2" fill="#888780">OPPONENT'S SIDE</text>
+
+  <!-- opponent resources row -->
+  <g font-family="Helvetica, Arial, sans-serif">
+    <rect x="60" y="102" width="150" height="68" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+    <text x="135" y="130" text-anchor="middle" font-size="14" font-weight="bold" fill="#26215C">DECK</text>
+    <text x="135" y="150" text-anchor="middle" font-size="11" fill="#534AB7">face down · draw 1/turn</text>
+
+    <rect x="240" y="102" width="320" height="68" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+    <text x="400" y="130" text-anchor="middle" font-size="14" font-weight="bold" fill="#26215C">HAND</text>
+    <text x="400" y="150" text-anchor="middle" font-size="11" fill="#534AB7">private · agents + augments · no size limit</text>
+
+    <rect x="590" y="102" width="150" height="68" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+    <text x="665" y="130" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A1B0C">WOUNDS</text>
+    <text x="665" y="150" text-anchor="middle" font-size="11" fill="#993C1D">face up · 13 = death</text>
+  </g>
+
+  <!-- opponent front -->
+  <g font-family="Helvetica, Arial, sans-serif">
+    <rect x="160" y="192" width="140" height="88" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1" stroke-dasharray="5 4"/>
+    <text x="230" y="228" text-anchor="middle" font-size="14" font-weight="bold" fill="#26215C">STACK ????</text>
+    <text x="230" y="248" text-anchor="middle" font-size="11" fill="#534AB7">size public, values hidden</text>
+
+    <rect x="330" y="192" width="140" height="88" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1" stroke-dasharray="5 4"/>
+    <text x="400" y="228" text-anchor="middle" font-size="14" font-weight="bold" fill="#26215C">STACK ????</text>
+    <text x="400" y="248" text-anchor="middle" font-size="11" fill="#534AB7">agent on top</text>
+
+    <rect x="500" y="192" width="140" height="88" rx="8" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 4"/>
+    <text x="570" y="228" text-anchor="middle" font-size="14" fill="#888780">(empty)</text>
+    <text x="570" y="248" text-anchor="middle" font-size="11" fill="#B4B2A9">room to muster</text>
+
+    <text x="660" y="240" font-size="11" fill="#888780">FRONT — max 3</text>
+  </g>
+
+  <!-- battlefield -->
+  <g font-family="Helvetica, Arial, sans-serif">
+    <rect x="50" y="300" width="700" height="80" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1" stroke-dasharray="8 5"/>
+    <text x="400" y="334" text-anchor="middle" font-size="16" font-weight="bold" letter-spacing="3" fill="#2C2C2A">THE BATTLEFIELD</text>
+    <text x="400" y="358" text-anchor="middle" font-size="12" fill="#5F5E5A">STRIKE attacks the player · CHALLENGE attacks a stack · reveals happen here</text>
+  </g>
+
+  <!-- your front -->
+  <g font-family="Helvetica, Arial, sans-serif">
+    <rect x="160" y="400" width="140" height="88" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1" stroke-dasharray="5 4"/>
+    <text x="230" y="436" text-anchor="middle" font-size="14" font-weight="bold" fill="#26215C">STACK ????</text>
+    <text x="230" y="456" text-anchor="middle" font-size="11" fill="#534AB7">A:0 K:1 Q:2 J:3 slots</text>
+
+    <rect x="330" y="400" width="140" height="88" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1" stroke-dasharray="5 4"/>
+    <text x="400" y="436" text-anchor="middle" font-size="14" font-weight="bold" fill="#26215C">STACK ????</text>
+    <text x="400" y="456" text-anchor="middle" font-size="11" fill="#534AB7">augments tucked under</text>
+
+    <rect x="500" y="400" width="140" height="88" rx="8" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 4"/>
+    <text x="570" y="436" text-anchor="middle" font-size="14" fill="#888780">(empty)</text>
+    <text x="570" y="456" text-anchor="middle" font-size="11" fill="#B4B2A9">room to muster</text>
+
+    <text x="660" y="448" font-size="11" fill="#888780">FRONT — max 3</text>
+  </g>
+
+  <!-- your resources row -->
+  <g font-family="Helvetica, Arial, sans-serif">
+    <rect x="60" y="508" width="150" height="68" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+    <text x="135" y="536" text-anchor="middle" font-size="14" font-weight="bold" fill="#26215C">DECK</text>
+    <text x="135" y="556" text-anchor="middle" font-size="11" fill="#534AB7">14 after drawing 4</text>
+
+    <rect x="240" y="508" width="320" height="68" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+    <text x="400" y="536" text-anchor="middle" font-size="14" font-weight="bold" fill="#26215C">HAND</text>
+    <text x="400" y="556" text-anchor="middle" font-size="11" fill="#534AB7">starts: 8 agents + 4 augments</text>
+
+    <rect x="590" y="508" width="150" height="68" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+    <text x="665" y="536" text-anchor="middle" font-size="14" font-weight="bold" fill="#4A1B0C">WOUNDS</text>
+    <text x="665" y="556" text-anchor="middle" font-size="11" fill="#993C1D">public damage ledger</text>
+  </g>
+
+  <text x="400" y="602" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" letter-spacing="2" fill="#888780">YOUR SIDE</text>
+
+  <!-- legend -->
+  <g font-family="Helvetica, Arial, sans-serif" font-size="11">
+    <rect x="185" y="628" width="14" height="14" rx="3" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+    <text x="206" y="639" fill="#5F5E5A">face down / hidden</text>
+    <rect x="340" y="628" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+    <text x="361" y="639" fill="#5F5E5A">face up / public</text>
+    <text x="480" y="639" fill="#888780">· card counts in every zone are always public</text>
+  </g>
+</svg>

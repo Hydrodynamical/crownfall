@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>CROWNFALL — Pass &amp; Play</title>
+<style>
+  :root{
+    --felt:#0d2818; --felt2:#123522; --ink:#e8e2d4; --dim:#9aa78f;
+    --gold:#d4af37; --red:#c0392b; --cardface:#f6f2e7; --cardink:#1b1b1f;
+    --danger:#e05545; --accent:#5dcaa5;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:var(--felt);color:var(--ink);
+    font-family:Georgia,'Times New Roman',serif; height:100%;}
+  #app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;
+    padding:8px 10px 90px;}
+  h1{font-size:26px;letter-spacing:4px;color:var(--gold);text-align:center;margin:12px 0 2px}
+  .sub{text-align:center;color:var(--dim);font-size:13px;font-style:italic;margin-bottom:14px}
+  button{font-family:inherit;font-size:15px;border:1px solid var(--gold);border-radius:8px;
+    background:#1b3a29;color:var(--ink);padding:10px 14px;cursor:pointer;margin:3px}
+  button.primary{background:var(--gold);color:#22200f;font-weight:bold}
+  button.warn{border-color:var(--danger);color:#f3b6ae}
+  button:disabled{opacity:.35;cursor:default}
+  .bar{position:fixed;bottom:0;left:0;right:0;background:rgba(9,26,16,.97);
+    border-top:1px solid #2c5540;padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+    text-align:center;z-index:20}
+  .bar .hint{font-size:13px;color:var(--dim);margin-bottom:5px;min-height:16px}
+  .zone{background:var(--felt2);border:1px solid #234a35;border-radius:12px;
+    padding:8px;margin:6px 0}
+  .zone h3{margin:0 0 6px;font-size:12px;letter-spacing:2px;color:var(--dim);
+    text-transform:uppercase;display:flex;justify-content:space-between;align-items:center}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start}
+  .counts{font-size:12px;color:var(--dim)}
+  .wbig{color:var(--danger);font-weight:bold}
+  /* cards */
+  .card{width:50px;height:72px;border-radius:6px;background:var(--cardface);
+    color:var(--cardink);position:relative;display:inline-block;flex:none;
+    border:1px solid #b9b2a0;box-shadow:0 1px 3px rgba(0,0,0,.5);font-family:Georgia,serif}
+  .card .c{position:absolute;top:3px;left:5px;font-size:13px;font-weight:bold;line-height:1.05}
+  .card .s{position:absolute;bottom:2px;right:5px;font-size:24px}
+  .card.red{color:var(--red)}
+  .card.back{background:repeating-linear-gradient(45deg,#5b2333 0 6px,#4a1c29 6px 12px);
+    border-color:#7a3346}
+  .card.back::after{content:"❦";position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;color:#c98b9b;font-size:20px}
+  .card.sel{outline:3px solid var(--gold);outline-offset:1px}
+  .card.mini{width:34px;height:48px}
+  .card.mini .c{font-size:10px;left:3px;top:2px}
+  .card.mini .s{font-size:15px;bottom:1px;right:3px}
+  /* stacks */
+  .stack{display:inline-flex;flex-direction:column;align-items:center;flex:none}
+  .stackcards{position:relative}
+  .stack .card{display:block;margin-top:-52px}
+  .stack .card:first-child{margin-top:0}
+  .stack.sel .card{outline:3px solid var(--gold)}
+  .stack.target .card{outline:3px dashed var(--accent)}
+  .stack .tag{font-size:11px;color:var(--dim);margin-top:4px;text-align:center}
+  .stack .tot{color:var(--gold)}
+  .badge{position:absolute;top:-6px;right:-8px;background:var(--gold);color:#22200f;
+    font-size:11px;font-weight:bold;border-radius:9px;padding:1px 6px;z-index:5}
+  .empty{width:50px;height:72px;border:1px dashed #3b6a4e;border-radius:6px;flex:none;
+    display:flex;align-items:center;justify-content:center;color:#3b6a4e;font-size:11px}
+  .handrow{display:flex;gap:6px;overflow-x:auto;padding:4px 2px}
+  /* overlays */
+  .curtain{position:fixed;inset:0;background:var(--felt);z-index:50;display:flex;
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+  .curtain h2{color:var(--gold);letter-spacing:3px}
+  .banner{background:#26224a33;border:1px solid #4b447e;border-radius:10px;
+    padding:8px 12px;margin:6px 0;font-size:14px}
+  .battle{background:#301b1b;border:1px solid #6e3030;border-radius:12px;padding:10px;margin:8px 0}
+  .battle h3{color:var(--danger);letter-spacing:2px;margin:0 0 8px;text-align:center}
+  .vs{display:flex;justify-content:space-around;align-items:flex-start;gap:10px}
+  .math{font-size:13px;color:var(--dim);text-align:center;margin-top:4px}
+  .logbox{background:#0a1f13;border:1px solid #1f4531;border-radius:10px;padding:8px;
+    font-size:12.5px;line-height:1.5;max-height:180px;overflow-y:auto;color:#c9d4bd}
+  .logbox div{border-bottom:1px dotted #1f4531;padding:2px 0}
+  details summary{color:var(--dim);cursor:pointer;font-size:13px;margin:6px 0}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:60;display:flex;
+    align-items:center;justify-content:center;padding:16px}
+  .modal>div{background:var(--felt2);border:1px solid var(--gold);border-radius:14px;
+    padding:16px;max-width:480px;max-height:85vh;overflow-y:auto;text-align:center}
+  input[type=text]{font-family:inherit;font-size:16px;padding:8px;border-radius:8px;
+    border:1px solid #38664c;background:#0a1f13;color:var(--ink);width:200px;text-align:center}
+  .namechip{color:var(--gold);font-weight:bold}
+  .center{text-align:center}
+  .small{font-size:12px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ============================ RULES ENGINE ============================ */
+const SUITS=["♠","♥","♦","♣"];
+const AV={A:14,K:13,Q:12,J:11}, SL={A:0,K:1,Q:2,J:3};
+const SUITNAME={"♠":"Legion","♥":"Cloister","♦":"Exchange","♣":"Veil"};
+let G=null;               // game state (serializable)
+const UI={sel:null,armSel:null,mode:null,target:null,peekCard:null,decree:false};
+
+const isAgent=c=>c.rank in AV;
+const pips=c=>+c.rank;
+const red=c=>c.suit==="♥"||c.suit==="♦";
+const cname=c=>c.rank+c.suit;
+const stTotal=st=>{let t=AV[st.agent.rank];for(const a of st.augments)t+=pips(a)+(a.suit===st.agent.suit?2:0);return t};
+const stCards=st=>[st.agent,...st.augments];
+const slotsFree=st=>SL[st.agent.rank]-st.augments.length;
+const P=i=>G.players[i];
+const hasAgents=p=>p.hand.some(isAgent)||p.front.length>0;
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const logmsg=m=>{G.log.push("T"+G.turnNo+" · "+m); if(G.log.length>400)G.log.shift();};
+
+function freshGame(n1,n2){
+  let id=0;
+  const players=[{name:n1},{name:n2}].map(o=>({name:o.name,deck:[],hand:[],front:[],
+    wounds:[],bleeds:0,clubUsed:[]}));
+  for(const rank of ["A","K","Q","J"]){
+    const g=shuffle(SUITS.map(s=>({rank,suit:s,id:id++})));
+    players[0].hand.push(g[0],g[1]); players[1].hand.push(g[2],g[3]);
+  }
+  const nums=[];
+  for(let n=2;n<=10;n++)for(const s of SUITS)nums.push({rank:String(n),suit:s,id:id++});
+  shuffle(nums);
+  players[0].deck=nums.slice(0,18); players[1].deck=nums.slice(18);
+  for(const p of players){p.hand.push(...p.deck.splice(0,4));}
+  G={players,phase:"seat",active:0,turnNo:0,first:0,actions:0,handicap:false,
+     pend:{},log:[],winner:null,condition:null,banner:null};
+  // opening reveal, re-reveal ties
+  let c1,c2;
+  for(;;){
+    c1=players[0].deck[0]; c2=players[1].deck[0];
+    if(pips(c1)!==pips(c2))break;
+    shuffle(players[0].deck); shuffle(players[1].deck);
+  }
+  G.pend={c1,c2,chooser:pips(c1)>pips(c2)?0:1};
+  logmsg(`Opening reveal: ${n1} ${cname(c1)} vs ${n2} ${cname(c2)} — ${players[G.pend.chooser].name} chooses seating.`);
+}
+
+/* -------- wounds & defeat -------- */
+function woundOne(pi,reason){
+  const p=P(pi); let c=null;
+  if(p.deck.length) c=p.deck.shift();
+  else if(p.hand.length) c=p.hand.splice(rnd(p.hand.length),1)[0];
+  else{
+    const augst=p.front.filter(s=>s.augments.length);
+    if(augst.length){
+      let best=null;
+      for(const s of augst)for(const a of s.augments){
+        const e=pips(a)+(a.suit===s.agent.suit?2:0);
+        if(!best||e<best.e)best={s,a,e};
+      }
+      best.s.augments.splice(best.s.augments.indexOf(best.a),1); c=best.a;
+    } else if(p.front.length){
+      let s=p.front.reduce((m,x)=>AV[x.agent.rank]<AV[m.agent.rank]?x:m);
+      p.front.splice(p.front.indexOf(s),1); c=s.agent;
+    } else return null;
+  }
+  p.wounds.push(c);
+  logmsg(`${p.name} takes a wound: ${cname(c)} (${reason}) — ${p.wounds.length}/13.`);
+  return c;
+}
+function woundCard(pi,card,reason){
+  P(pi).wounds.push(card);
+  logmsg(`${P(pi).name} wounds: ${cname(card)} (${reason}) — ${P(pi).wounds.length}/13.`);
+}
+const isDefeated=p=>p.wounds.length>=13||!hasAgents(p);
+function checkNow(){ // outside battle: immediate
+  for(const i of [0,1]){
+    if(isDefeated(P(i))){
+      G.winner=1-i; G.condition=P(i).wounds.length>=13?"13 wounds":"agent extinction";
+      G.phase="over";
+      logmsg(`${P(1-i).name} WINS (${G.condition}).`);
+      return true;
+    }
+  }
+  return false;
+}
+function checkAfterBattle(){
+  const a=G.active,b=1-G.active;
+  const ad=isDefeated(P(a)),bd=isDefeated(P(b));
+  if(!ad&&!bd)return false;
+  let w;
+  if(ad&&bd){ // simultaneous: fewer wounds wins; equal → active player
+    w = P(a).wounds.length<P(b).wounds.length?a
+      : P(b).wounds.length<P(a).wounds.length?b : a;
+    G.condition="simultaneous defeat";
+  } else { w=ad?b:a; const l=P(ad?a:b);
+    G.condition=l.wounds.length>=13?"13 wounds":"agent extinction"; }
+  G.winner=w; G.phase="over";
+  logmsg(`${P(w).name} WINS (${G.condition}).`);
+  return true;
+}
+
+/* -------- turn machinery -------- */
+function startTurn(){
+  G.turnNo++;
+  UI.sel=null; UI.mode=null; UI.peekCard=null;
+  const p=P(G.active);
+  for(const s of p.front)s.attacked=false;
+  G.handicap=(G.turnNo===1);
+  G.actions=G.handicap?1:2;
+  G.banner=null;
+  if(p.deck.length){
+    const c=p.deck.shift(); p.hand.push(c);
+    G.banner=`You drew ${cname(c)}.`;
+  } else {
+    p.bleeds++;
+    const n=p.bleeds===1?1:2;
+    logmsg(`${p.name}'s deck is empty — BLEEDS ${n}.`);
+    for(let i=0;i<n;i++){woundOne(G.active,"bleed"); if(checkNow())return;}
+    G.banner=`Your deck is empty — you bled ${n} wound${n>1?"s":""}.`;
+  }
+  G.phase="turn";
+}
+function curtain(forPlayer,next,msg){
+  G.phase="curtain"; G.pend.curtain={forPlayer,next,msg};
+}
+function afterAction(){
+  if(G.phase!=="turn")return;
+  UI.sel=UI.armSel=UI.mode=UI.target=null;
+}
+
+/* -------- battle -------- */
+function beginBattle(){
+  // raise round: defender first
+  const b=G.pend.battle;
+  const dp=P(b.def);
+  if(dp.hand.some(c=>!isAgent(c))&&slotsFree(b.defStack)>0) G.phase="raiseDef";
+  else afterDefRaise();
+}
+function afterDefRaise(){
+  const b=G.pend.battle;
+  const ap=P(b.att);
+  if(ap.hand.some(c=>!isAgent(c))&&slotsFree(b.attStack)>0)
+    curtain(b.att,"raiseAtt",`${P(b.def).name} is ready. One last chance to raise.`);
+  else G.phase="reveal";
+}
+function resolveReveal(){
+  const b=G.pend.battle;
+  const at=stTotal(b.attStack),dt=stTotal(b.defStack);
+  b.at=at;b.dt=dt;
+  // remove stacks from fronts
+  const ap=P(b.att),dp=P(b.def);
+  let ix=ap.front.indexOf(b.attStack); if(ix>=0)ap.front.splice(ix,1);
+  ix=dp.front.indexOf(b.defStack); if(ix>=0)dp.front.splice(ix,1);
+  logmsg(`⚔ BATTLE: ${ap.name} reveals ${stCards(b.attStack).map(cname).join("+")} = ${at} vs ${dp.name} ${stCards(b.defStack).map(cname).join("+")} = ${dt}.`);
+  if(at===dt){
+    b.tie=true;
+    for(const [pi,st] of [[b.att,b.attStack],[b.def,b.defStack]]){
+      if(st.agent.rank==="A"&&!st.augments.length){
+        P(pi).hand.push(st.agent);
+        logmsg(`Tie — ${P(pi).name}'s ${cname(st.agent)} walks away (Ace).`);
+      } else for(const c of stCards(st)) woundCard(pi,c,"tie: stack destroyed");
+    }
+    if(!checkAfterBattle())G.phase="battleEnd";
+    return;
+  }
+  const attWins=at>dt;
+  b.winner=attWins?b.att:b.def; b.loser=attWins?b.def:b.att;
+  b.wStack=attWins?b.attStack:b.defStack; b.lStack=attWins?b.defStack:b.attStack;
+  logmsg(`${P(b.winner).name} wins ${Math.max(at,dt)}–${Math.min(at,dt)}.`);
+  for(const c of stCards(b.lStack)) woundCard(b.loser,c,"battle loss");
+  // winner spend
+  if(b.wStack.agent.suit==="♦"){
+    logmsg(`♦ The Exchange: ${P(b.winner).name} spends nothing.`);
+    finishBattle(null);
+  } else if(b.wStack.augments.length===0){
+    finishBattle(null);
+  } else if(b.wStack.augments.length===1){
+    const sp=b.wStack.augments.splice(0,1)[0];
+    woundCard(b.winner,sp,"victory spend");
+    maybeHeal(sp);
+  } else G.phase="spend";
+}
+function maybeHeal(spent){
+  const b=G.pend.battle; b.spent=spent;
+  if(b.wStack.agent.suit==="♥"&&spent){
+    const pool=P(b.winner).wounds.filter(c=>!isAgent(c)&&c!==spent);
+    if(pool.length){G.phase="heal";return;}
+  }
+  finishBattle(spent);
+}
+function finishBattle(spent){
+  const b=G.pend.battle;
+  // winner's remaining cards home
+  P(b.winner).hand.push(b.wStack.agent,...b.wStack.augments);
+  if(b.wStack.agent.suit==="♠"){
+    logmsg(`♠ The Legion: extra wound to ${P(b.loser).name}.`);
+    woundOne(b.loser,"Legion bonus");
+  }
+  if(!checkAfterBattle())G.phase="battleEnd";
+}
+
+/* ============================ ACTION DISPATCH ============================ */
+function act(a){
+  switch(a.t){
+    case "deal":
+      if(G&&G.phase&&G.phase!=="over")return; // ignore stale double-taps mid-game
+      freshGame(a.n1||"Player 1",a.n2||"Player 2"); break;
+
+    case "seat":{
+      if(G.phase!=="seat")return;
+      G.first=a.first; G.active=a.first;
+      const {c1,c2}=G.pend;
+      shuffle(P(0).deck); shuffle(P(1).deck);
+      logmsg(`${P(a.first).name} goes first (1 action, no attacks on turn 1).`);
+      G.pend={};
+      curtain(G.active,"newTurn",`The court convenes.`);
+      break;}
+
+    case "curtainDone":{
+      if(G.phase!=="curtain")return;
+      const c=G.pend.curtain||{next:"newTurn"}; G.pend.curtain=null;
+      if(c.next==="newTurn")startTurn();
+      else G.phase=c.next;
+      break;}
+
+    /* ----- turn actions ----- */
+    case "muster":{
+      if(G.phase!=="turn"||G.actions<1)return;
+      const p=P(G.active), card=p.hand[a.hi];
+      if(!card||!isAgent(card)||p.front.length>=3)return;
+      p.hand.splice(a.hi,1);
+      const st={agent:card,augments:[],attacked:false,decreed:false};
+      p.front.push(st); G.actions--;
+      logmsg(`${p.name} musters a new stack (${p.front.length} on front).`);
+      afterAction();
+      if(card.suit==="♣"&&!p.clubUsed.includes(card.id)){
+        p.clubUsed.push(card.id);
+        if(P(1-G.active).front.length){G.pend.peek={};G.phase="peek";}
+      }
+      break;}
+
+    case "peekPick":{
+      if(G.phase!=="peek")return;
+      const es=P(1-G.active).front[a.si]; if(!es)return;
+      const cards=stCards(es), card=cards[a.pos]; if(!card)return;
+      UI.peekCard=card;
+      const posName=a.pos===0?"top":(a.pos===cards.length-1?"bottom":`#${a.pos+1}`);
+      logmsg(`♣ The Veil: ${P(G.active).name} peeks the ${posName} card of ${P(1-G.active).name}'s ${cards.length}-stack.`);
+      G.pend.peek.done=true;
+      break;}
+    case "peekSkip":
+      if(G.phase!=="peek")return;
+      logmsg(`${P(G.active).name} lets the Veil pass (peek forfeited).`);
+      UI.peekCard=null; G.phase="turn"; break;
+    case "peekDone":
+      if(G.phase!=="peek")return;
+      UI.peekCard=null; G.phase="turn"; break;
+
+    case "arm":{
+      if(G.phase!=="turn"||G.actions<1)return;
+      const p=P(G.active), card=p.hand[a.hi], st=p.front[a.si];
+      if(!card||isAgent(card)||!st||slotsFree(st)<1)return;
+      p.hand.splice(a.hi,1); st.augments.push(card); G.actions--;
+      logmsg(`${p.name} arms a stack (now ${st.augments.length+1} cards).`);
+      afterAction(); break;}
+
+    case "recall":{
+      if(G.phase!=="turn"||G.actions<1)return;
+      const p=P(G.active), st=p.front[a.si]; if(!st)return;
+      p.front.splice(a.si,1); p.hand.push(...stCards(st)); G.actions--;
+      logmsg(`${p.name} recalls a ${st.augments.length+1}-card stack to hand.`);
+      afterAction(); break;}
+
+    case "strike":{
+      if(G.phase!=="turn"||G.actions<1||G.handicap)return;
+      const p=P(G.active), st=p.front[a.si];
+      if(!st||st.attacked)return;
+      st.attacked=true; G.actions--;
+      const d=1-G.active;
+      logmsg(`${p.name} STRIKES ${P(d).name} with a ${st.augments.length+1}-card stack.`);
+      G.pend.battle={att:G.active,def:d,attStack:st,defStack:null,kind:"strike",decree:false};
+      afterAction();
+      if(P(d).front.length===0){
+        const n=st.augments.length+1;
+        logmsg(`${P(d).name} has no stacks and takes the hit: ${n} wound(s).`);
+        for(let i=0;i<n;i++){woundOne(d,"unblocked strike"); if(checkNow())return;}
+        G.banner=`${P(d).name} had no defenders — took ${n} wound(s). Your striker stays hidden.`;
+        G.pend.battle=null;
+      } else curtain(d,"defStrike",`${p.name} has declared a Strike.`);
+      break;}
+
+    case "challenge":{
+      if(G.phase!=="turn"||G.actions<1||G.handicap)return;
+      const p=P(G.active), st=p.front[a.si], es=P(1-G.active).front[a.ei];
+      if(!st||st.attacked||!es)return;
+      st.attacked=true; G.actions--;
+      const decree=!!a.decree&&st.agent.rank==="K";
+      if(decree){st.decreed=true;
+        logmsg(`${p.name} CHALLENGES with KING'S DECREE — flips ${cname(st.agent)} face up. No retreat.`);}
+      else logmsg(`${p.name} CHALLENGES ${P(1-G.active).name}'s ${es.augments.length+1}-card stack with a ${st.augments.length+1}-card stack.`);
+      G.pend.battle={att:G.active,def:1-G.active,attStack:st,defStack:es,kind:"challenge",decree};
+      afterAction();
+      curtain(1-G.active,"defChallenge",`${p.name} has declared a Challenge.`);
+      break;}
+
+    case "endTurn":{
+      if(G.phase!=="turn")return;
+      G.active=1-G.active;
+      curtain(G.active,"newTurn",`The initiative passes.`);
+      break;}
+
+    /* ----- defense ----- */
+    case "takeHit":{
+      if(G.phase!=="defStrike")return;
+      const b=G.pend.battle, n=b.attStack.augments.length+1;
+      logmsg(`${P(b.def).name} takes the hit: ${n} wound(s). The striker stays hidden.`);
+      for(let i=0;i<n;i++){woundOne(b.def,"unblocked strike"); if(checkNow())return;}
+      G.pend.battle=null;
+      curtain(b.att,"newBanner",`${P(b.def).name} took the hit.`);
+      G.pend.backBanner=`${P(b.def).name} took the hit — your striker stays hidden on your front.`;
+      break;}
+    case "blockWith":{
+      if(G.phase!=="defStrike")return;
+      const b=G.pend.battle, bs=P(b.def).front[a.bi]; if(!bs)return;
+      b.defStack=bs;
+      logmsg(`${P(b.def).name} BLOCKS with a ${bs.augments.length+1}-card stack.`);
+      beginBattle(); break;}
+    case "fight":
+      if(G.phase!=="defChallenge")return;
+      logmsg(`${P(G.pend.battle.def).name} accepts the battle.`);
+      beginBattle(); break;
+    case "retreat":{
+      if(G.phase!=="defChallenge")return;
+      const b=G.pend.battle; if(b.decree)return;
+      if(b.defStack.augments.length) G.phase="toll";
+      else {
+        const dp=P(b.def), ix=dp.front.indexOf(b.defStack);
+        dp.front.splice(ix,1); dp.hand.push(...stCards(b.defStack));
+        logmsg(`${dp.name} retreats the lone agent (free).`);
+        G.pend.battle=null;
+        curtain(b.att,"newBanner","");
+        G.pend.backBanner=`${dp.name} retreated the lone agent. Your challenger stays deployed.`;
+      }
+      break;}
+    case "tollPick":{
+      if(G.phase!=="toll")return;
+      const b=G.pend.battle, dp=P(b.def), st=b.defStack;
+      const aug=st.augments[a.ai]; if(!aug)return;
+      st.augments.splice(a.ai,1);
+      woundCard(b.def,aug,"retreat toll");
+      const ix=dp.front.indexOf(st);
+      dp.front.splice(ix,1); dp.hand.push(...stCards(st));
+      logmsg(`${dp.name} retreats the stack, paying ${cname(aug)}.`);
+      G.pend.battle=null;
+      if(checkNow())return;
+      curtain(b.att,"newBanner","");
+      G.pend.backBanner=`${dp.name} retreated and paid ${cname(aug)} as toll. Your challenger stays deployed.`;
+      break;}
+
+    /* ----- raise ----- */
+    case "raise":{
+      const b=G.pend.battle;
+      const who=G.phase==="raiseDef"?b.def:(G.phase==="raiseAtt"?b.att:null);
+      if(who===null)return;
+      const st=G.phase==="raiseDef"?b.defStack:b.attStack;
+      const p=P(who), card=p.hand[a.hi];
+      if(!card||isAgent(card)||slotsFree(st)<1)return;
+      p.hand.splice(a.hi,1); st.augments.push(card);
+      logmsg(`${p.name} raises — slides a hidden augment under the stack (now ${st.augments.length+1} cards).`);
+      if(G.phase==="raiseDef")afterDefRaise(); else G.phase="reveal";
+      break;}
+    case "raiseSkip":
+      if(G.phase==="raiseDef")afterDefRaise();
+      else if(G.phase==="raiseAtt")G.phase="reveal";
+      break;
+
+    /* ----- battle resolution ----- */
+    case "revealDone": if(G.phase==="reveal")resolveReveal(); break;
+    case "spendPick":{
+      if(G.phase!=="spend")return;
+      const b=G.pend.battle, aug=b.wStack.augments[a.ai]; if(!aug)return;
+      b.wStack.augments.splice(a.ai,1);
+      woundCard(b.winner,aug,"victory spend");
+      maybeHeal(aug); break;}
+    case "healPick":{
+      if(G.phase!=="heal")return;
+      const b=G.pend.battle, p=P(b.winner), c=p.wounds[a.wi];
+      if(!c||isAgent(c)||c===b.spent)return;
+      p.wounds.splice(a.wi,1); p.hand.push(c);
+      logmsg(`♥ The Cloister: ${p.name} recovers ${cname(c)} from wounds — ${p.wounds.length}/13.`);
+      finishBattle(b.spent); break;}
+    case "healSkip": if(G.phase==="heal")finishBattle(G.pend.battle.spent); break;
+    case "battleDone":{
+      if(G.phase!=="battleEnd")return;
+      const b=G.pend.battle; G.pend.battle=null;
+      curtain(G.active,"newBanner","");
+      G.pend.backBanner="The dust settles. Your turn continues.";
+      break;}
+
+    case "newGame": G=null; localStorage.removeItem("crownfall"); render(); return;
+  }
+  // "newBanner" curtains land back on the active player's turn screen
+  if(G&&G.phase==="curtain"&&G.pend.curtain&&G.pend.curtain.next==="newBanner"){
+    G.pend.curtain.next="turn";
+  }
+  if(G&&G.phase==="turn"&&G.pend.backBanner){G.banner=G.pend.backBanner;G.pend.backBanner=null;}
+  save(); render();
+}
+
+/* ============================ PERSISTENCE ============================ */
+function save(){ if(G) localStorage.setItem("crownfall",JSON.stringify(G)); }
+function load(){
+  try{
+    const s=localStorage.getItem("crownfall"); if(!s)return null;
+    const g=JSON.parse(s);
+    if(!g||!g.phase||g.phase==="over")return null;
+    // JSON breaks object identity: re-link mid-battle stack refs to live front stacks
+    const b=g.pend&&g.pend.battle;
+    if(b){
+      const relink=(stk,pi)=>{
+        if(!stk||pi==null)return stk;
+        const hit=g.players[pi].front.find(s=>s.agent.id===stk.agent.id);
+        return hit||stk;
+      };
+      b.attStack=relink(b.attStack,b.att);
+      b.defStack=relink(b.defStack,b.def);
+      if(b.wStack)b.wStack=relink(b.wStack,b.winner);
+      if(b.lStack)b.lStack=relink(b.lStack,b.loser);
+    }
+    return g;
+  }catch(e){return null;}
+}
+
+/* ============================ RENDERING ============================ */
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function cardHTML(c,cls="",sel=false){
+  return `<div class="card ${red(c)?"red":""} ${cls} ${sel?"sel":""}">
+    <div class="c">${c.rank}<br>${c.suit}</div><div class="s">${c.suit}</div></div>`;
+}
+const backHTML=(cls="")=>`<div class="card back ${cls}"></div>`;
+function stackHTML(st,opts){ // opts: {faceup, sel, target, showTotal, badge}
+  const cards=stCards(st);
+  let inner="";
+  cards.forEach((c,i)=>{
+    const up=opts.faceup||(i===0&&st.decreed);
+    inner+=up?cardHTML(c):backHTML();
+  });
+  const tag=opts.showTotal?`<div class="tag">${cards.length} card${cards.length>1?"s":""} · <span class="tot">${stTotal(st)}</span></div>`
+        :`<div class="tag">${cards.length} card${cards.length>1?"s":""}${st.decreed?" · Decree":""}</div>`;
+  return `<div class="stack ${opts.sel?"sel":""} ${opts.target?"target":""}" ${opts.data||""}>
+    <div class="stackcards">${opts.badge?`<div class="badge">${opts.badge}</div>`:""}${inner}</div>${tag}</div>`;
+}
+function woundsHTML(p){
+  if(!p.wounds.length)return `<span class="small">none</span>`;
+  return `<div class="handrow">`+p.wounds.map(c=>cardHTML(c,"mini")).join("")+`</div>`;
+}
+function statusHTML(p,mine){
+  return `<span class="counts">deck ${p.deck.length} · hand ${p.hand.length} ·
+    <span class="wbig">${p.wounds.length}/13 wounds</span></span>`;
+}
+function logHTML(){
+  return `<details><summary>Battle log (public record)</summary>
+    <div class="logbox">${G.log.slice().reverse().map(l=>`<div>${esc(l)}</div>`).join("")}</div></details>`;
+}
+function btn(label,a,cls="",dis=false){
+  return `<button class="${cls}" ${dis?"disabled":""} data-a='${JSON.stringify(a)}'>${label}</button>`;
+}
+
+function render(){
+  if(!G){ // title
+    const saved=load();
+    app.innerHTML=`<h1>CROWNFALL</h1><div class="sub">Bluff with your blood · pass &amp; play</div>
+      <div class="zone center">
+        <p>Two players, one device. The screen will tell you when to pass it —
+        never peek at a curtain that isn't yours.</p>
+        <p><input type="text" id="n1" placeholder="Player 1 name" value="Player 1"><br>
+           <input type="text" id="n2" placeholder="Player 2 name" value="Player 2"></p>
+        <button class="primary" id="dealBtn">Deal the courts</button>
+        ${saved?`<button id="resumeBtn">Resume saved game</button>`:""}
+      </div>
+      <div class="zone small">
+        <b>The game in one breath:</b> your 26 cards are your life. Face cards are agents
+        (A=14 · K=13 · Q=12 · J=11, holding 0/1/2/3 augments). Deploy face down, strike and
+        challenge, reveal — higher total wins (+2 per augment matching its agent's suit).
+        The loser's stack becomes wounds; even the winner spends a card. 13 wounds and you fall.
+        ♠ extra wound on wins · ♥ heal on wins · ♦ spend nothing · ♣ peek on muster.
+      </div>`;
+    document.getElementById("dealBtn").onclick=()=>{
+      act({t:"deal",n1:document.getElementById("n1").value.trim()||"Player 1",
+                    n2:document.getElementById("n2").value.trim()||"Player 2"});
+    };
+    const rb=document.getElementById("resumeBtn");
+    if(rb)rb.onclick=()=>{G=load();render();};
+    return;
+  }
+  const ph=G.phase;
+
+  if(ph==="seat"){
+    const {c1,c2,chooser}=G.pend;
+    app.innerHTML=`<h1>CROWNFALL</h1><div class="sub">the opening reveal — public</div>
+      <div class="zone center"><div class="row" style="justify-content:center">
+        <div>${cardHTML(c1)}<div class="small">${esc(P(0).name)}</div></div>
+        <div style="align-self:center">vs</div>
+        <div>${cardHTML(c2)}<div class="small">${esc(P(1).name)}</div></div></div>
+        <p><span class="namechip">${esc(P(chooser).name)}</span> shows higher and chooses:</p>
+        ${btn(`${esc(P(chooser).name)} goes first`,{t:"seat",first:chooser},"primary")}
+        ${btn(`${esc(P(1-chooser).name)} goes first`,{t:"seat",first:1-chooser})}
+        <p class="small">Going first: only 1 action and no attacks on turn 1 —
+        but you draw first and set the tempo. Revealed cards shuffle back.</p>
+      </div>`;
+    return;
+  }
+
+  if(ph==="curtain"){
+    const c=G.pend.curtain;
+    app.innerHTML=`<div class="curtain"><h2>PASS THE DEVICE</h2>
+      <p>${esc(c.msg||"")}</p>
+      <p>Hand it to <span class="namechip" style="font-size:22px">${esc(P(c.forPlayer).name)}</span></p>
+      ${btn(`I am ${esc(P(c.forPlayer).name)} — continue`,{t:"curtainDone"},"primary")}</div>`;
+    return;
+  }
+
+  if(ph==="over"){
+    const w=P(G.winner),l=P(1-G.winner);
+    app.innerHTML=`<h1>CROWNFALL</h1><div class="sub">the crown has fallen</div>
+      <div class="zone center"><h2 style="color:var(--gold)">${esc(w.name)} WINS</h2>
+      <p>${esc(G.condition)} — final wounds: ${esc(w.name)} ${w.wounds.length}/13,
+      ${esc(l.name)} ${l.wounds.length}/13</p>
+      ${btn("New game",{t:"newGame"},"primary")}</div>
+      <div class="zone"><h3>${esc(P(0).name)} — wounds</h3>${woundsHTML(P(0))}</div>
+      <div class="zone"><h3>${esc(P(1).name)} — wounds</h3>${woundsHTML(P(1))}</div>
+      ${logHTML()}`;
+    return;
+  }
+
+  const b=G.pend.battle;
+
+  if(ph==="defStrike"||ph==="defChallenge"){
+    const me=P(b.def), foe=P(b.att);
+    const n=b.attStack.augments.length+1;
+    let body="";
+    if(ph==="defStrike"){
+      body=`<p><b>${esc(foe.name)}</b> strikes you with a <b>${n}-card stack</b>${b.attStack.decreed?" (its King is face up)":""}.
+        Take <b>${n} wound${n>1?"s":""}</b>, or block with one of your stacks?</p>
+        <div class="row">`+
+        me.front.map((s,i)=>`<div>${stackHTML(s,{faceup:true,showTotal:true})}${btn("Block with this",{t:"blockWith",bi:i})}</div>`).join("")+
+        `</div><p>${btn(`Take the hit (${n} wound${n>1?"s":""})`,{t:"takeHit"},"warn")}</p>`;
+    } else {
+      const decreeNote=b.decree?`<p style="color:var(--danger)"><b>KING'S DECREE${b.attStack?" — "+cname(b.attStack.agent):""}</b> is face up: you cannot retreat.</p>`:"";
+      body=`<p><b>${esc(foe.name)}</b> challenges your stack below with a <b>${n}-card stack</b>.</p>
+        ${decreeNote}
+        <div class="row">${stackHTML(b.defStack,{faceup:true,showTotal:true,badge:"targeted"})}</div>
+        <p>${btn("Fight",{t:"fight"},"primary")}
+        ${b.decree?"":btn(b.defStack.augments.length?"Retreat (pay one augment)":"Retreat (free — lone agent)",{t:"retreat"})}</p>`;
+    }
+    app.innerHTML=`<h1 style="font-size:18px">DEFEND, ${esc(me.name).toUpperCase()}</h1>
+      <div class="zone">${body}</div>
+      <div class="zone"><h3>Your side ${statusHTML(me)}</h3>
+        <div class="handrow">${me.hand.map(c=>cardHTML(c)).join("")}</div></div>
+      ${logHTML()}`;
+    return;
+  }
+
+  if(ph==="toll"){
+    const me=P(b.def);
+    app.innerHTML=`<h1 style="font-size:18px">RETREAT TOLL</h1>
+      <div class="zone center"><p>Choose which augment this stack pays to your wounds:</p>
+      <div class="row" style="justify-content:center">${
+        b.defStack.augments.map((c,i)=>`<div data-a='${JSON.stringify({t:"tollPick",ai:i})}'>${cardHTML(c)}</div>`).join("")
+      }</div></div>`;
+    return;
+  }
+
+  if(ph==="raiseDef"||ph==="raiseAtt"){
+    const who=ph==="raiseDef"?b.def:b.att;
+    const st=ph==="raiseDef"?b.defStack:b.attStack;
+    const me=P(who);
+    const augs=me.hand.map((c,i)=>({c,i})).filter(x=>!isAgent(x.c));
+    app.innerHTML=`<h1 style="font-size:18px">THE RAISE — ${esc(me.name).toUpperCase()}</h1>
+      <div class="zone center"><p>The battle is locked. You may slide <b>one</b> hidden augment
+        under your fighter (${slotsFree(st)} slot${slotsFree(st)>1?"s":""} free)${ph==="raiseDef"?" — defender raises first":""}.</p>
+      <div class="row" style="justify-content:center">${stackHTML(st,{faceup:true,showTotal:true})}</div>
+      <div class="handrow" style="justify-content:center">${
+        augs.map(x=>`<div data-a='${JSON.stringify({t:"raise",hi:x.i})}'>${cardHTML(x.c)}</div>`).join("")
+      }</div>
+      <p>${btn("No raise",{t:"raiseSkip"},"primary")}</p></div>`;
+    return;
+  }
+
+  if(ph==="reveal"){
+    app.innerHTML=`<div class="curtain"><h2>⚔ REVEAL ⚔</h2>
+      <p>Both players — look at the screen together.</p>
+      ${btn("Turn the cards",{t:"revealDone"},"primary")}</div>`;
+    return;
+  }
+
+  if(ph==="spend"||ph==="heal"||ph==="battleEnd"){
+    let inner="";
+    const mk=(pi,st,tot)=>`<div><div class="small center">${esc(P(pi).name)}</div>
+      ${stackHTML(st,{faceup:true})}<div class="math">${
+        stCards(st).map(c=>isAgent(c)?AV[c.rank]:(pips(c)+(c.suit===st.agent.suit?2:0))).join(" + ")
+      } = <b>${tot}</b></div></div>`;
+    if(ph==="battleEnd"&&b.tie){
+      inner=`<p class="center">A <b>TIE ${b.at}–${b.dt}</b> — both stacks are destroyed
+        (lone Aces walk away). No spend, no suit powers.</p>
+        <p class="center">${btn("Continue",{t:"battleDone"},"primary")}</p>`;
+    } else if(ph==="spend"){
+      inner=`<p class="center"><b>${esc(P(b.winner).name)} wins ${Math.max(b.at,b.dt)}–${Math.min(b.at,b.dt)}!</b>
+        The loser's whole stack is now wounds. Victory has a price:
+        choose <b>one augment</b> to spend to your own wounds.</p>
+        <div class="row" style="justify-content:center">${
+          b.wStack.augments.map((c,i)=>`<div data-a='${JSON.stringify({t:"spendPick",ai:i})}'>${cardHTML(c)}</div>`).join("")
+        }</div>`;
+    } else if(ph==="heal"){
+      const p=P(b.winner);
+      inner=`<p class="center">♥ <b>The Cloister</b>: you spent ${cname(b.spent)} — you may recover
+        one <b>other</b> number card from your wounds.</p>
+        <div class="row" style="justify-content:center">${
+          p.wounds.map((c,i)=>(!isAgent(c)&&c!==b.spent)?`<div data-a='${JSON.stringify({t:"healPick",wi:i})}'>${cardHTML(c)}</div>`:"").join("")
+        }</div><p class="center">${btn("Decline",{t:"healSkip"})}</p>`;
+    } else {
+      inner=`<p class="center"><b>${esc(P(b.winner).name)} wins ${Math.max(b.at,b.dt)}–${Math.min(b.at,b.dt)}.</b>
+        The fallen stack lies in the wounds pile; the victor's survivors return to hand exhausted.</p>
+        <p class="center">${btn("Continue",{t:"battleDone"},"primary")}</p>`;
+    }
+    app.innerHTML=`<div class="battle"><h3>⚔ THE BATTLE — PUBLIC ⚔</h3>
+      <div class="vs">${mk(b.att,b.attStack,b.at)}${mk(b.def,b.defStack,b.dt)}</div></div>
+      <div class="zone">${inner}</div>
+      <div class="small center">${esc(P(0).name)}: ${P(0).wounds.length}/13 wounds ·
+        ${esc(P(1).name)}: ${P(1).wounds.length}/13 wounds</div>
+      ${logHTML()}`;
+    return;
+  }
+
+  if(ph==="peek"){
+    const foe=P(1-G.active);
+    let body;
+    if(UI.peekCard){
+      body=`<p>Behind the veil you glimpse:</p>
+        <div class="row" style="justify-content:center">${cardHTML(UI.peekCard)}</div>
+        <p>${btn("Commit it to memory",{t:"peekDone"},"primary")}</p>`;
+    } else {
+      body=`<p>♣ <b>The Veil</b> stirs: peek at <b>one</b> face-down card in one enemy stack
+        (the position you name is public). Or decline — forfeiting this agent's peek forever.</p>`+
+        foe.front.map((s,si)=>{
+          const n=s.augments.length+1;
+          return `<div class="zone"><div class="row" style="justify-content:center">${stackHTML(s,{faceup:false})}</div>
+            <div class="center">${Array.from({length:n},(_,p)=>
+              btn(p===0?"Top (agent)":(p===n-1?"Bottom":"#"+(p+1)),{t:"peekPick",si,pos:p})).join("")}</div></div>`;
+        }).join("")+
+        `<p class="center">${btn("Decline the peek",{t:"peekSkip"},"warn")}</p>`;
+    }
+    app.innerHTML=`<h1 style="font-size:18px">THE VEIL — ${esc(P(G.active).name).toUpperCase()} ONLY</h1>
+      <div class="zone center">${body}</div>`;
+    return;
+  }
+
+  /* ---------- main turn screen ---------- */
+  const me=P(G.active), foe=P(1-G.active);
+  // drop any selection that no longer points at a real card/stack
+  if(UI.sel&&UI.sel.kind==="hand"&&!me.hand[UI.sel.i]){UI.sel=null;UI.mode=null;}
+  if(UI.sel&&UI.sel.kind==="stack"&&!me.front[UI.sel.i]){UI.sel=null;UI.mode=null;}
+  const sel=UI.sel, mode=UI.mode;
+  // enemy zone
+  let enemyFront=foe.front.length?foe.front.map((s,i)=>{
+    const targetable=mode==="pickTarget";
+    return `<div ${targetable?`data-a='${JSON.stringify({t:"ui:target",ei:i})}'`:""}>
+      ${stackHTML(s,{faceup:false,target:targetable})}</div>`;
+  }).join(""):`<div class="empty">no<br>stacks</div>`;
+  // my front
+  let myFront=me.front.length?me.front.map((s,i)=>{
+    const selected=sel&&sel.kind==="stack"&&sel.i===i;
+    return `<div data-a='${JSON.stringify({t:"ui:selStack",i})}'>
+      ${stackHTML(s,{faceup:true,showTotal:true,sel:selected,badge:s.attacked?"used":""})}</div>`;
+  }).join(""):`<div class="empty">no<br>stacks</div>`;
+  // hand
+  let hand=me.hand.map((c,i)=>{
+    const selected=sel&&sel.kind==="hand"&&sel.i===i;
+    return `<div data-a='${JSON.stringify({t:"ui:selHand",i})}'>${cardHTML(c,"",selected)}</div>`;
+  }).join("");
+  // contextual bar
+  let hint="Tap a hand card or one of your stacks.",buttons="";
+  const acts=G.actions;
+  if(mode==="pickTarget"){
+    hint="Tap the enemy stack to challenge."; buttons=btn("Cancel",{t:"ui:cancel"});
+  } else if(sel&&sel.kind==="hand"){
+    const c=me.hand[sel.i];
+    if(isAgent(c)){
+      hint=`${cname(c)} — a ${SUITNAME[c.suit]} agent (${AV[c.rank]}, ${SL[c.rank]} slots).`;
+      buttons=btn("Muster",{t:"muster",hi:sel.i},"primary",acts<1||me.front.length>=3);
+    } else {
+      hint=`${cname(c)} — now tap one of your stacks to arm it.`;
+      buttons=btn("Cancel",{t:"ui:cancel"});
+    }
+  } else if(sel&&sel.kind==="stack"){
+    const s=me.front[sel.i];
+    hint=`Stack: ${stCards(s).map(cname).join("+")} = ${stTotal(s)}${s.attacked?" (already attacked)":""}.`;
+    const noAtk=acts<1||s.attacked||G.handicap;
+    buttons=btn("Strike",{t:"strike",si:sel.i},"",noAtk)
+      +btn("Challenge",{t:"ui:beginChallenge"},"",noAtk||!foe.front.length)
+      +btn("Recall",{t:"recall",si:sel.i},"",acts<1)
+      +btn("✕",{t:"ui:cancel"});
+  }
+  app.innerHTML=`
+    <h1 style="font-size:18px;margin:6px 0">${esc(me.name).toUpperCase()}'S TURN
+      <span class="small" style="letter-spacing:0">· turn ${G.turnNo} · ${acts} action${acts===1?"":"s"} left${G.handicap?" · first-turn: no attacks":""}</span></h1>
+    ${G.banner?`<div class="banner">${esc(G.banner)}</div>`:""}
+    <div class="zone"><h3>${esc(foe.name)} ${statusHTML(foe)}</h3>
+      <div class="row">${enemyFront}</div>
+      <details><summary>${esc(foe.name)}'s wounds (public)</summary>${woundsHTML(foe)}</details></div>
+    <div class="zone"><h3>Your front (max 3)</h3><div class="row">${myFront}</div></div>
+    <div class="zone"><h3>Your hand ${statusHTML(me)}</h3>
+      <div class="handrow">${hand}</div>
+      <details><summary>Your wounds (public)</summary>${woundsHTML(me)}</details></div>
+    ${logHTML()}
+    <div class="bar"><div class="hint">${hint}</div>
+      ${buttons} ${btn("End turn",{t:"endTurn"},acts===0?"primary":"")}</div>`;
+}
+
+/* ---------- UI-only actions ---------- */
+function uiAct(a){
+  const me=P(G.active);
+  switch(a.t){
+    case "ui:selHand":{
+      if(!me.hand[a.i])break;
+      if(UI.sel&&UI.sel.kind==="hand"&&UI.sel.i===a.i){UI.sel=null;break;}
+      UI.sel={kind:"hand",i:a.i}; UI.mode=null; break;}
+    case "ui:selStack":{
+      if(!me.front[a.i])break;
+      if(UI.sel&&UI.sel.kind==="hand"&&me.hand[UI.sel.i]&&!isAgent(me.hand[UI.sel.i])){
+        act({t:"arm",hi:UI.sel.i,si:a.i}); return;
+      }
+      if(UI.sel&&UI.sel.kind==="stack"&&UI.sel.i===a.i){UI.sel=null;UI.mode=null;break;}
+      UI.sel={kind:"stack",i:a.i}; UI.mode=null; break;}
+    case "ui:beginChallenge":
+      if(!UI.sel||UI.sel.kind!=="stack"||!me.front[UI.sel.i])break;
+      UI.mode="pickTarget"; break;
+    case "ui:target":{
+      if(!UI.sel||UI.sel.kind!=="stack"){UI.mode=null;break;}
+      const si=UI.sel.i, st=me.front[si];
+      if(!st){UI.sel=null;UI.mode=null;break;}
+      if(st.agent.rank==="K"){
+        UI.pendingChal={si,ei:a.ei};
+        if(confirm("Invoke KING'S DECREE? (Flips your King face up — the enemy cannot retreat.)"))
+          act({t:"challenge",si,ei:a.ei,decree:true});
+        else act({t:"challenge",si,ei:a.ei,decree:false});
+        return;
+      }
+      act({t:"challenge",si,ei:a.ei,decree:false}); return;}
+    case "ui:cancel": UI.sel=null; UI.mode=null; break;
+  }
+  render();
+}
+app.addEventListener("click",e=>{
+  const el=e.target.closest("[data-a]");
+  if(!el)return;
+  let a; try{a=JSON.parse(el.dataset.a);}catch(err){return;}
+  try{
+    if(a.t.startsWith("ui:"))uiAct(a); else act(a);
+  }catch(err){ // never brick the table: drop UI state and re-render
+    console.error("crownfall recovered from:",err);
+    UI.sel=null; UI.mode=null;
+    try{render();}catch(e2){console.error(e2);}
+  }
+});
+
+/* ============================ SELF-TEST ============================ */
+function invariant(){
+  const ids=new Set(), b=G.pend.battle;
+  G.players.forEach((p,pi)=>{
+    const cards=[...p.deck,...p.hand,...p.wounds];
+    for(const s of p.front){
+      cards.push(...stCards(s));
+      if(!isAgent(s.agent))throw new Error("stack led by non-agent");
+      if(s.augments.length>SL[s.agent.rank])throw new Error("over-slot stack");
+    }
+    // mid-battle limbo: the winner's stack is off the front until finishBattle
+    if(b&&b.wStack&&b.winner===pi&&(G.phase==="spend"||G.phase==="heal"))
+      cards.push(...stCards(b.wStack));
+    if(cards.length!==26)throw new Error(p.name+" owns "+cards.length+" cards");
+    for(const c of cards){if(ids.has(c.id))throw new Error("dup card "+cname(c));ids.add(c.id);}
+  });
+  if(ids.size!==52)throw new Error("total "+ids.size);
+}
+function legalRandom(){
+  const ph=G.phase;
+  const pick=arr=>arr[rnd(arr.length)];
+  if(ph==="seat")return {t:"seat",first:rnd(2)};
+  if(ph==="curtain")return {t:"curtainDone"};
+  if(ph==="peek"){
+    if(UI.peekCard)return {t:"peekDone"};
+    const foe=P(1-G.active);
+    if(!foe.front.length||Math.random()<.2)return {t:"peekSkip"};
+    const si=rnd(foe.front.length);
+    return {t:"peekPick",si,pos:rnd(foe.front[si].augments.length+1)};
+  }
+  if(ph==="turn"){
+    const me=P(G.active),foe=P(1-G.active),opts=[];
+    if(G.actions>0){
+      me.hand.forEach((c,hi)=>{
+        if(isAgent(c)&&me.front.length<3)opts.push({t:"muster",hi});
+        else if(!isAgent(c))me.front.forEach((s,si)=>{if(slotsFree(s)>0)opts.push({t:"arm",hi,si})});
+      });
+      if(!G.handicap)me.front.forEach((s,si)=>{
+        if(!s.attacked){opts.push({t:"strike",si});
+          foe.front.forEach((_,ei)=>opts.push({t:"challenge",si,ei,decree:s.agent.rank==="K"&&Math.random()<.5}));}
+      });
+      me.front.forEach((_,si)=>opts.push({t:"recall",si}));
+    }
+    opts.push({t:"endTurn"});
+    if(G.actions===0||Math.random()<.15)return {t:"endTurn"};
+    return pick(opts);
+  }
+  if(ph==="defStrike"){
+    const b=G.pend.battle,opts=[{t:"takeHit"}];
+    P(b.def).front.forEach((_,bi)=>opts.push({t:"blockWith",bi}));
+    return pick(opts);
+  }
+  if(ph==="defChallenge"){
+    const b=G.pend.battle;
+    return (b.decree||Math.random()<.6)?{t:"fight"}:{t:"retreat"};
+  }
+  if(ph==="toll")return {t:"tollPick",ai:rnd(G.pend.battle.defStack.augments.length)};
+  if(ph==="raiseDef"||ph==="raiseAtt"){
+    const b=G.pend.battle,who=ph==="raiseDef"?b.def:b.att;
+    const augs=P(who).hand.map((c,i)=>({c,i})).filter(x=>!isAgent(x.c));
+    if(!augs.length||Math.random()<.5)return {t:"raiseSkip"};
+    return {t:"raise",hi:pick(augs).i};
+  }
+  if(ph==="reveal")return {t:"revealDone"};
+  if(ph==="spend")return {t:"spendPick",ai:rnd(G.pend.battle.wStack.augments.length)};
+  if(ph==="heal"){
+    const b=G.pend.battle,p=P(b.winner);
+    const opts=p.wounds.map((c,wi)=>({c,wi})).filter(x=>!isAgent(x.c)&&x.c!==b.spent);
+    if(!opts.length||Math.random()<.3)return {t:"healSkip"};
+    return {t:"healPick",wi:pick(opts).wi};
+  }
+  if(ph==="battleEnd")return {t:"battleDone"};
+  throw new Error("no legal action for phase "+ph);
+}
+window.autoTest=function(games=20){
+  const results=[];
+  for(let g=0;g<games;g++){
+    freshGame("A","B");
+    let steps=0;
+    while(G.phase!=="over"){
+      if(++steps>20000)throw new Error("game "+g+" never ended");
+      act(legalRandom());
+      invariant();
+    }
+    results.push({winner:P(G.winner).name,cond:G.condition,turns:G.turnNo});
+  }
+  G=null;localStorage.removeItem("crownfall");render();
+  const conds={};results.forEach(r=>conds[r.cond]=(conds[r.cond]||0)+1);
+  return {games,conds,avgTurns:results.reduce((s,r)=>s+r.turns,0)/games};
+};
+
+/* boot */
+render();
+</script>
+</body>
+</html>
